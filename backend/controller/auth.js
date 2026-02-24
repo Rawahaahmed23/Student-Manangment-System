@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const Admin = require('../schema/AdminSchema')
 const transporter = require('../nodemailer/nodemailer')
 
-
+//  Singup 
 const Singup = async(req,res)=>{
  try{
    const{username,email,password} = req.body
@@ -50,55 +50,61 @@ await transporter.sendMail(mailOption)
  }
 }
 
+// Login 
+const Login = async (req, res) => {
+  try {
+    const { username, password, rememberMe } = req.body;
 
-const Login = async(req,res)=>{
-    try{
-
-        const {username,password} = req.body
-        const exists =await  Admin.findOne({username})
-        if(!exists){
-          return res.status(400).json({message:"User unauthroized"})
-        }
-        const compare = await exists.comparePassword(password)
-        if(!compare){
-            res.status(400).json({message:'Incorrect email Passsword'})
-        }
- const token = await exists.generateToken();
- res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        
-  sameSite: "None", 
-  maxAge:7*24*60*60*1000    
-  
-});
-     res.status(200).json(
-        {message: 'Login Sucessfuly',
-        userId: exists._id.toString(),
-
-        })
-    }catch(error){
-        res.status(500).jsonn({message:error})
-        
+    const exists = await Admin.findOne({ username });
+    if (!exists) {
+      return res.status(400).json({ message: "User unauthorized" });
     }
-  
+
+    const compare = await exists.comparePassword(password);
+    if (!compare) {
+      return res.status(400).json({ message: "Incorrect email or password" });
+    }
+
+    const token = await exists.generateToken();
+
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production", 
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", 
+  maxAge: rememberMe
+    ? 7 * 24 * 60 * 60 * 1000
+    : 24 * 60 * 60 * 1000
+});
+
+    res.status(200).json({
+      message: "Login Successfully",
+      userId: exists._id.toString(),
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
-}
+// Logout 
 
 const Logout = async(req,res)=>{
     try{
-    res.clearCookie('token',{
-         httpOnly: true,
-  secure: true,        
-  sameSite: "None", 
-  
-    })
+  res.clearCookie('token', {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+});
     return res.status(200).json({message:"Logout suceesful"})
     }catch(error){
       return  res.status(500).jsonn({message:error})
     }
 }
 
+
+
+// sendOtp
 const sendOtp = async(req,res)=>{
    try{
      const {email} = req.body
@@ -163,6 +169,7 @@ res.status(200).json({message:"otp send sucessfuly"})
    }
 }
 
+// Forgot passowrd 
 
 const ResetPassword = async(req,res)=>{
 const {email,otp,newpassword}=req.body
@@ -194,6 +201,22 @@ try{
 }
 }
 
+const user = async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+
+    const getuser = await Admin.findById(loggedInUser._id).select("-password");
+  
+    res.status(200).json({ user: getuser });
+  } catch (error) {
+    console.error("User route error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 
-module.exports ={Singup,Login,Logout,sendOtp,ResetPassword}
+
+
+
+
+module.exports ={Singup,Login,Logout,sendOtp,ResetPassword,user}

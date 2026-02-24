@@ -2,30 +2,44 @@ import './index.css'
 import RegistrationForm from "./pages/Register"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginForm from './pages/Login';
-import StudentDetail from './pages/Home';
+import StudentDetail from './pages/StudentData';
 import StudentRegistrationForm from './pages/AddStudent';
 import Layout from './pages/Layout';
 import Dashboard from './pages/Dashboard';
-
+import FeesTracker from './pages/FeesTracker';
+import { AuthProvider } from './Store/useAuth';      
+import ProtectedRoute from './components/Protectiveroute';
 function App() {
   return (
+    <AuthProvider>   
     <BrowserRouter>
-      <Routes>
+  <Routes>
 
-        {/* 👇 Yeh routes sidebar ke bina honge */}
-        <Route path="/register" element={<RegistrationForm />} />
-        <Route path="/login" element={<LoginForm />} />
+    {/* Public Routes */}
+    <Route path="/register" element={<RegistrationForm />} />
+    <Route path="/" element={<LoginForm />} />
 
-        {/* 👇 Yeh sab sidebar ke sath chalenge */}
-        <Route element={<Layout />}>
-          <Route path="/StudentDetails" element={<StudentDetail />} />
-          <Route path="/addstudent" element={<StudentRegistrationForm />} />
-          <Route path="/Dashboard" element={<Dashboard />} />
-        </Route>
+    {/* Protected Routes */}
+    <Route
+      element={
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      }
+    >
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/studentdetails" element={<StudentDetail />} />
+      <Route path="/addstudent" element={<StudentRegistrationForm />} />
+      <Route path="/feestracker" element={<FeesTracker />} />
+    </Route>
 
-      </Routes>
-    </BrowserRouter>
+    {/* Default Redirect */}
+    {/* <Route path="*" element={<LoginForm />} /> */}
+
+  </Routes>
+</BrowserRouter>
+    </AuthProvider>
   )
 }
 
-export default App
+export default App;

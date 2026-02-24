@@ -7,8 +7,8 @@ const {signupSchema,loginSchema} = require('../validator/validation')
 
 
 Route.route('/Signup').post(validator(signupSchema), auhtController.Singup);
-
-Route.route('/Login').post(auhtController.Login)
+Route.route('/auth').get(authmiddleware,auhtController.user)
+Route.route('/Login').post(validator(loginSchema),auhtController.Login)
 Route.route('/Logout').post(auhtController.Logout)
 Route.route('/sendOtp').post(auhtController.sendOtp)
 Route.route('/resetPassword').post(auhtController.ResetPassword)

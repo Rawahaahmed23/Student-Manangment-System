@@ -1,24 +1,32 @@
-const jwt = require('jsonwebtoken');
-const Admin = require('../schema/AdminSchema')
+const jwt = require("jsonwebtoken");
+const Admin = require("../schema/AdminSchema");
 
-const authmiddleware = async(req,res,next)=>{
-try{
-     let token =req.cookies.token; 
+const authMiddleware = async (req, res, next) => {
+  try {
+    
+    let token =req.cookies.token;
 
-     if(!token){
-        res.status(200).json({message:"No token, authorization denie"})
-     }
-     const userdata = jwt.verify(process.env.JWT_SELECT_KEY)
-     const user = await Admin.findById(userdata.userId).select({password:0})
-     req.user = user;
+
+     if (!token) {
+      return res.status(401).json({ message: "No token, authorization denied" });
+    }
+
+    
+  
+    const userdata = jwt.verify(token, process.env.JWT_SELECT_KEY);
+
+    const user = await Admin.findById(userdata.userId).select({ password: 0 });
+    req.user = user;
     req.token = token;
     req._id = userdata._id;
 
-
-}catch(error){
+    next();
+  } catch (error) {
     console.log(error);
-    
-}
-}
+    return res.status(401).json({ msg: 'invalid token' });
+  }
+};
 
-module.exports = authmiddleware
+
+
+module.exports = authMiddleware

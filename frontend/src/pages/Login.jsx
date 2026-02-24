@@ -1,32 +1,71 @@
-import React, { useState } from 'react';
-import { useRef } from 'react';
+import React, { useState, useRef,useEffect } from 'react';
 import { FaUser, FaLock } from "react-icons/fa";
 import Input from '../components/Input';
+import { useAuth } from '@/Store/useAuth';
+import { Spinner } from '@/components/ui/spinner';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginForm() {
+
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const [Loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const {userAuthentication} = useAuth()
+
+
+
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
+    setError("");
 
     const username = usernameRef.current.value;
     const password = passwordRef.current.value;
 
-    if (username && password) {
-      alert(`Login successful!\n\nUsername: ${username}`);
-      console.log({ username, password });
-    } else {
-      alert("Please fill in all required fields.");
+    try {
+      const response = await fetch('http://localhost:5000/Login', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({ 
+          username, 
+          password,
+          rememberMe   
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Invalid credentials");
+        setLoading(false);
+        return;
+      }
+      await userAuthentication(); 
+      setLoading(false);
+      navigate("/Dashboard");
+
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
     }
   };
 
-
   return (
     <div className="flex min-h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Left Section - Student Image */}
-      <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden">
 
+      {/* Left Section */}
+      <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden">
         <img 
           src="/Student.png" 
           alt="Student with books" 
@@ -34,52 +73,86 @@ export default function LoginForm() {
         />
       </div>
 
-      {/* Right Section - Form */}
+   
       <div className="flex-1 bg-white flex items-center justify-center p-8 lg:p-12 relative shadow-2xl">
         <div className="w-full max-w-md">
-          {/* Title */}
+
+      
           <div className="mb-10">
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-3"> Login </h1>
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-3">
+              Login
+            </h1>
             <p className="text-lg text-gray-500">
-              Login to your account</p>
+              Login to your account
+            </p>
           </div>
-          
+
           <p className="text-sm text-gray-600 mb-8">
-            Don't have an account?{' '}
-            <a href="/register" className="text-sky-500 font-semibold hover:text-sky-600 transition-colors">
+            Don't have an account?{" "}
+            <a 
+              href="/register" 
+              className="text-sky-500 font-semibold hover:text-sky-600 transition-colors"
+            >
               Register here
             </a>
           </p>
 
-          {/* Form */}
+         
           <form onSubmit={handleSubmit} className="space-y-6">
 
-      <Input
-        label="Username"
-        type="text"
-        name="username"
-        placeholder="johndoe"
-        ref={usernameRef}
-        icon={<FaUser />}
-      />
+            {error && (
+              <div className="bg-red-100 text-red-600 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
 
-      <Input
-        label="Password"
-        type="password"
-        name="password"
-        placeholder="••••••••"
-        ref={passwordRef}
-        icon={<FaLock />}
-      />
+            <Input
+              label="Username"
+              type="text"
+              name="username"
+              placeholder="johndoe"
+              ref={usernameRef}
+              icon={<FaUser />}
+            />
 
-      <button
-        type="submit"
-        className="w-full mt-8 px-6 py-4 bg-gradient-to-r from-sky-500 to-sky-600 text-white font-bold text-lg rounded-xl"
-      >
-        Login
-      </button>
+            <Input
+              label="Password"
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              ref={passwordRef}
+              icon={<FaLock />}
+            />
 
-    </form>
+   
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 text-sky-500 border-gray-300 rounded focus:ring-sky-500"
+                />
+                Remember Me
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={Loading}
+              className="w-full mt-6 px-6 py-4 bg-gradient-to-r from-sky-500 to-sky-600 text-white font-bold text-lg rounded-xl flex items-center justify-center gap-2 disabled:opacity-70"
+            >
+              {Loading ? (
+                <>
+                  <Spinner className="h-5 w-5" />
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
+            </button>
+
+          </form>
         </div>
       </div>
     </div>

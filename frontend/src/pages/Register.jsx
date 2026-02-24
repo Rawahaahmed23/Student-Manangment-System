@@ -1,24 +1,49 @@
-import React, { useState } from 'react';
-import { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Input from '../components/Input';
+import { useNavigate } from 'react-router-dom';
+import { Spinner } from "@/components/ui/spinner"
+
 
 export default function RegistrationForm() {
   const usernameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
+const Navigate = useNavigate()
+  const [loading ,setloading] = useState(false)
 
-  const handleSubmit = (e) => {
+const [error, setError] = useState("");
+  
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+const formData = {
+  username: usernameRef.current.value,
+  email: emailRef.current.value,
+  password: passwordRef.current.value
+};
+ setloading(true);
+    try{
+     const response = await fetch('http://localhost:5000/Signup',{
+      method : "Post",
+      credentials:'include',
+      headers: {'Content-Type': 'application/json'},
+       body: JSON.stringify(formData) 
+     })
 
-    const username = usernameRef.current.value;
-    const email = emailRef.current.value;
-    const password = passwordRef.current.value;
-
-    if (username && email && password) {
-      alert(`Registered Successfully!\nUsername: ${username}`);
-    } else {
-      alert("Please fill all fields");
+     const data = await response.json()
+     if(!response.ok){
+       setError(data.message || data.extraDetails);
+      setloading(false);
+      return;
+     }
+    }catch(error){
+       console.log(error);
+       
+        
+    }finally{
+      setloading(false)
     }
+ 
   };
 
   return (
@@ -64,6 +89,11 @@ Sign up
         onSubmit={handleSubmit}
         className=" rounded-2xl  w-full max-w-md space-y-6"
       >
+        {error && (
+  <div className="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm">
+    {error}
+  </div>
+)}
  
         <Input
           ref={usernameRef}
@@ -89,14 +119,23 @@ Sign up
           placeholder="••••••••"
         />
 
-        <button
-          type="submit"
-          className="w-full py-3 bg-yellow-500 text-white font-bold rounded-xl hover:bg-yellow-600 transition"
-        >
-          Create Account
-        </button>
+     <button
+  type="submit"
+  disabled={loading}
+  className="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+>
+  {loading ? (
+    <>
+      <Spinner className="h-5 w-5 animate-spin" />
+      Creating Account...
+    </>
+  ) : (
+    "Create Account"
+  )}
+</button>
       </form>
 
+         
 
           {/* Footer Text */}
        

@@ -14,11 +14,11 @@ export default function VerifyOTP() {
     return <Navigate to="/404" replace />;
   }
 
-  const [step, setStep] = useState("otp"); // "otp" | "password"
+  const [step, setStep] = useState("otp");
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const otpRefs = useRef([]);
-  const verifiedOtp = useRef(""); // verified OTP store karo
+  const verifiedOtp = useRef(""); 
 
   const newPasswordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
@@ -93,7 +93,7 @@ export default function VerifyOTP() {
     }
   };
 
-  // ── Reset Password ────────────────────────────────────────
+
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setError("");

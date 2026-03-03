@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
+import { useAuth } from '../Store/useAuth'; // ✅ add karo
 
 const Header = () => {
+  const navigate = useNavigate(); // ✅ andar lao, chhota 'n'
+  const { logout } = useAuth();   // ✅ useAuth se logout use karo
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef();
-
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -13,14 +16,12 @@ const Header = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    
+  const handleLogout = async () => {
+    await logout();    
+    navigate('/');    
   };
 
   return (

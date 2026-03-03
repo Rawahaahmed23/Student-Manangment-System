@@ -34,7 +34,7 @@ const StudentRegistrationForm = () => {
 
   const handleReset = () => {
     setFormData({
-      grNo: "",
+      GrNumber: "",
       studentName: "",
       fatherName: "",
       class: "",
@@ -46,10 +46,36 @@ const StudentRegistrationForm = () => {
     });
   };
 
-  const handleSubmit = () => {
-    console.log(formData);
-  };
+  const handleSubmit = async(e) => {
 
+try {
+  const response = await fetch("http://localhost:5000/Student/add_Student", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(formData)
+  });
+
+  const data = await response.json();
+
+  if (response.ok) {
+    setFormData({
+      GrNumber: "",
+      studentName: "",
+      fatherName: "",
+      class: "",
+      gender: "male",
+      dateOfBirth: "",
+      dateOfAdmission: "",
+      monthlyFee: "",
+      profilePic: null,
+    });
+  }
+
+} catch (error) {
+  console.log(error);
+}}
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-3 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
@@ -132,7 +158,7 @@ const StudentRegistrationForm = () => {
                   <Label className="text-sm font-medium text-gray-700 mb-1.5 block">G.R No</Label>
                   <Input
                     placeholder="Enter G.R Number"
-                    value={formData.grNo}
+                    value={formData.GrNumber}
                     onChange={(e) => updateField("grNo", e.target.value)}
                     className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   />

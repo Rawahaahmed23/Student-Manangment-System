@@ -10,6 +10,7 @@ import FeesTracker from './pages/FeesTracker';
 import { AuthProvider } from './Store/useAuth';      
 import ProtectedRoute from './components/Protectiveroute';
 import ForgotPassword from './pages/ForgotPass';
+import PublicRoute from './Routes/publicRoutes';
 
 import ResetPassword from './pages/ResetPassword';
 function App() {
@@ -18,8 +19,17 @@ function App() {
     <BrowserRouter>
   <Routes>
 
-    <Route path="/register" element={<RegistrationForm />} />
-    <Route path="/" element={<LoginForm />} />
+    <Route path="/" element={
+  <PublicRoute>
+    <LoginForm />
+  </PublicRoute>
+} />
+
+<Route path="/register" element={
+  <PublicRoute>
+    <RegistrationForm />
+  </PublicRoute>
+} />
 
     <Route
       element={

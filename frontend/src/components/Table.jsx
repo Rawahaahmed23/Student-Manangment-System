@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -7,224 +7,218 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit2, Trash2, Phone, Calendar, User, GraduationCap } from "lucide-react";
+import { Edit2, Trash2, Phone, Calendar, Users, ChevronLeft, ChevronRight, Search, Filter } from "lucide-react";
 
-function StudentTable({ students }) {
+const GENDER_COLORS = {
+  Male: "bg-sky-50 text-sky-600",
+  Female: "bg-pink-50 text-pink-600",
+};
+
+function Avatar({ firstName, lastName, profileImage, size = "md" }) {
+  const initials = `${firstName?.charAt(0) ?? ""}${lastName?.charAt(0) ?? ""}`;
+  const sizeClass = size === "sm" ? "w-8 h-8 text-xs" : "w-10 h-10 text-sm";
+  if (profileImage) {
+    return <img src={profileImage} alt={firstName} className={`${sizeClass} rounded-xl object-cover`} />;
+  }
   return (
-    <div className="w-[90%] mx-auto px-2 sm:px-4 lg:px-6 mt-6">
-      <div className="w-full  mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-        
-        {/* Header Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 sm:px-6 py-4">
-          <h2 className="text-lg sm:text-xl font-bold text-white">Student Directory</h2>
-          <p className="text-blue-100 text-xs sm:text-sm mt-1">Manage and view all student records</p>
+    <div className={`${sizeClass} rounded-xl bg-slate-100 flex items-center justify-center font-semibold text-slate-500 shrink-0`}>
+      {initials}
+    </div>
+  );
+}
+
+/* ─── Mobile Card ─── */
+function StudentCard({ student }) {
+  return (
+    <div className="bg-white rounded-2xl border border-slate-100 p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Avatar {...student} />
+          <div>
+            <p className="font-semibold text-slate-800 text-sm leading-tight">
+              {student.firstName} {student.lastName}
+            </p>
+            <p className="text-xs text-slate-400">GR# {student.grNumber}</p>
+          </div>
         </div>
+        <span className="text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
+          {student.className}
+        </span>
+      </div>
 
-        {/* Mobile Card View */}
-        <div className="block lg:hidden">
-          {students.map((student) => (
-            <div key={student.id} className="border-b border-gray-200 p-4 hover:bg-blue-50 transition-colors">
-              {/* Student Header */}
-              <div className="flex items-center gap-3 mb-3">
-                {student.profileImage ? (
-                  <img
-                    src={student.profileImage}
-                    alt={student.firstName}
-                    className="w-14 h-14 rounded-full object-cover border-2 border-blue-200 shadow-sm"
-                  />
-                ) : (
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-lg font-bold text-white shadow-md">
-                    {student.firstName?.charAt(0)}{student.lastName?.charAt(0)}
-                  </div>
-                )}
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-base">
-                    {student.firstName} {student.lastName}
-                  </h3>
-                  <p className="text-sm text-gray-600">GR# {student.grNumber}</p>
-                </div>
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                  {student.className}
-                </span>
-              </div>
+      {/* Divider */}
+      <div className="h-px bg-slate-50" />
 
-              {/* Student Details Grid */}
-              <div className="grid grid-cols-2 gap-3 mb-3">
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Father Name</p>
-                  <p className="text-sm font-medium text-gray-900">{student.fatherName}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Gender</p>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                    student.gender === 'Male' 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : 'bg-blue-100 text-blue-700'
-                  }`}>
-                    {student.gender}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Date of Birth</p>
-                  <p className="text-sm text-gray-700 flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    {student.dateOfBirth}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Admission</p>
-                  <p className="text-sm text-gray-700 flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    {student.dateOfAdmission}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Monthly Fee</p>
-                  <p className="text-sm font-semibold text-gray-900">Rs. {student.monthlyFee}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Contact</p>
-                  <p className="text-sm text-gray-700 flex items-center gap-1">
-                    <Phone className="w-3 h-3" />
-                    {student.contact}
-                  </p>
-                </div>
-              </div>
+      {/* Info Grid */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
+        <div>
+          <p className="text-[10px] uppercase tracking-wide text-slate-400 mb-0.5">Father</p>
+          <p className="text-slate-700 font-medium truncate">{student.fatherName}</p>
+        </div>
+        <div>
+          <p className="text-[10px] uppercase tracking-wide text-slate-400 mb-0.5">Gender</p>
+          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${GENDER_COLORS[student.gender] ?? "bg-slate-100 text-slate-600"}`}>
+            {student.gender}
+          </span>
+        </div>
+        <div>
+          <p className="text-[10px] uppercase tracking-wide text-slate-400 mb-0.5">Date of Birth</p>
+          <p className="text-slate-600 flex items-center gap-1"><Calendar className="w-3 h-3" />{student.dateOfBirth}</p>
+        </div>
+        <div>
+          <p className="text-[10px] uppercase tracking-wide text-slate-400 mb-0.5">Admission</p>
+          <p className="text-slate-600 flex items-center gap-1"><Calendar className="w-3 h-3" />{student.dateOfAdmission}</p>
+        </div>
+        <div>
+          <p className="text-[10px] uppercase tracking-wide text-slate-400 mb-0.5">Monthly Fee</p>
+          <p className="font-semibold text-slate-800">Rs. {student.monthlyFee}</p>
+        </div>
+        <div>
+          <p className="text-[10px] uppercase tracking-wide text-slate-400 mb-0.5">Contact</p>
+          <p className="text-slate-600 flex items-center gap-1"><Phone className="w-3 h-3" />{student.contact}</p>
+        </div>
+      </div>
 
-              {/* Actions */}
-              <div className="flex gap-2 pt-2 border-t border-gray-100">
-                <button className="flex-1 py-2 px-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-medium text-blue-700">
-                  <Edit2 className="w-4 h-4" />
-                  Edit
-                </button>
-                <button className="flex-1 py-2 px-3 bg-red-50 hover:bg-red-100 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-medium text-red-700">
-                  <Trash2 className="w-4 h-4" />
-                  Delete
-                </button>
-              </div>
+      {/* Actions */}
+      <div className="flex gap-2 pt-1">
+        <button className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 transition-colors">
+          <Edit2 className="w-3.5 h-3.5" /> Edit
+        </button>
+        <button className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium text-red-500 bg-red-50 hover:bg-red-100 transition-colors">
+          <Trash2 className="w-3.5 h-3.5" /> Delete
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main Component ─── */
+function StudentTable({ students = [] }) {
+  const [page, setPage] = useState(1);
+  const totalPages = 12;
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto space-y-5">
+
+        {/* ── Page Header ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold text-slate-800">Student Directory</h1>
+            <p className="text-slate-400 text-sm mt-0.5">Manage and view all student records</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Search bar */}
+            <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-400 shadow-sm w-48 lg:w-64">
+              <Search className="w-4 h-4 shrink-0" />
+              <input
+                placeholder="Search students..."
+                className="bg-transparent outline-none text-slate-600 placeholder-slate-400 w-full text-sm"
+              />
             </div>
-          ))}
+            <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-medium shadow-sm hover:bg-slate-50 transition-colors">
+              <Filter className="w-4 h-4" /> Filter
+            </button>
+          </div>
         </div>
 
-        {/* Desktop Table View */}
-        <div className="hidden lg:block overflow-x-auto">
-          <Table className="w-full">
-            
-            {/* Table Header */}
+        {/* ── DESKTOP TABLE (lg+) ── */}
+        <div className="hidden lg:block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+
+          {/* Table top bar */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-50">
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <Users className="w-4 h-4 text-slate-400" />
+              <span><span className="font-semibold text-slate-700">{students.length}</span> students</span>
+            </div>
+            <span className="text-xs text-slate-400">Showing page {page} of {totalPages}</span>
+          </div>
+
+          <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50 border-b-2 border-gray-200">
-                <TableHead className="text-center font-semibold text-gray-700 py-4">G.R No</TableHead>
-                <TableHead className="text-left font-semibold text-gray-700 py-4">Student</TableHead>
-                <TableHead className="text-center font-semibold text-gray-700 py-4">Father Name</TableHead>
-                <TableHead className="text-center font-semibold text-gray-700 py-4">Class</TableHead>
-                <TableHead className="text-center font-semibold text-gray-700 py-4">Gender</TableHead>
-                <TableHead className="text-center font-semibold text-gray-700 py-4">DOB</TableHead>
-                <TableHead className="text-center font-semibold text-gray-700 py-4">Admission</TableHead>
-                <TableHead className="text-center font-semibold text-gray-700 py-4">Fee</TableHead>
-                <TableHead className="text-center font-semibold text-gray-700 py-4">Contact</TableHead>
-                <TableHead className="text-center font-semibold text-gray-700 py-4">Actions</TableHead>
+              <TableRow className="border-b border-slate-100 bg-slate-50/60">
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 pl-6 w-16">GR#</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3">Student</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3">Father</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">Class</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">Gender</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">DOB</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">Admission</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">Fee</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">Contact</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 pr-6 text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
-
-            {/* Table Body */}
             <TableBody>
-              {students.map((student) => (
+              {students.map((student, i) => (
                 <TableRow
                   key={student.id}
-                  className="hover:bg-blue-50 transition-all duration-200 border-b border-gray-100"
+                  className="border-b border-slate-50 hover:bg-slate-50/80 transition-colors group"
                 >
                   {/* GR Number */}
-                  <TableCell className="text-center">
-                    <span className="inline-flex items-center justify-center w-10 h-10  text-blue-700 font-bold rounded-lg">
-                      {student.grNumber}
-                    </span>
+                  <TableCell className="pl-6 py-3.5">
+                    <span className="text-xs font-mono font-semibold text-slate-400">{student.grNumber}</span>
                   </TableCell>
 
-                  {/* Student Name with Profile */}
-                  <TableCell>
+                  {/* Student */}
+                  <TableCell className="py-3.5">
                     <div className="flex items-center gap-3">
-                      {student.profileImage ? (
-                        <img
-                          src={student.profileImage}
-                          alt={student.firstName}
-                          className="w-11 h-11 rounded-full object-cover border-2 border-blue-200 shadow-sm"
-                        />
-                      ) : (
-                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-base font-bold text-white shadow-md">
-                          {student.firstName?.charAt(0)}{student.lastName?.charAt(0)}
-                        </div>
-                      )}
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-gray-900">
-                          {student.firstName} {student.lastName}
-                        </span>
-                        <span className="text-xs text-gray-500">Student</span>
+                      <Avatar {...student} size="sm" />
+                      <div>
+                        <p className="font-semibold text-slate-800 text-sm">{student.firstName} {student.lastName}</p>
+                        <p className="text-xs text-slate-400">Student</p>
                       </div>
                     </div>
                   </TableCell>
 
-                  {/* Father Name */}
-                  <TableCell className="text-center">
-                    <span className="text-gray-700">{student.fatherName}</span>
+                  {/* Father */}
+                  <TableCell className="py-3.5">
+                    <span className="text-sm text-slate-600">{student.fatherName}</span>
                   </TableCell>
 
                   {/* Class */}
-                  <TableCell className="text-center">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                  <TableCell className="py-3.5 text-center">
+                    <span className="text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
                       {student.className}
                     </span>
                   </TableCell>
 
                   {/* Gender */}
-                  <TableCell className="text-center">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                      student.gender === 'Male' 
-                        ? 'bg-blue-100 text-blue-700' 
-                        : 'bg-blue-100 text-blue-700'
-                    }`}>
+                  <TableCell className="py-3.5 text-center">
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${GENDER_COLORS[student.gender] ?? "bg-slate-100 text-slate-600"}`}>
                       {student.gender}
                     </span>
                   </TableCell>
 
-                  {/* Date of Birth */}
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center gap-1 text-gray-600 text-sm">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {student.dateOfBirth}
-                    </div>
+                  {/* DOB */}
+                  <TableCell className="py-3.5 text-center">
+                    <span className="text-sm text-slate-500">{student.dateOfBirth}</span>
                   </TableCell>
 
-                  {/* Date of Admission */}
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center gap-1 text-gray-600 text-sm">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {student.dateOfAdmission}
-                    </div>
+                  {/* Admission */}
+                  <TableCell className="py-3.5 text-center">
+                    <span className="text-sm text-slate-500">{student.dateOfAdmission}</span>
                   </TableCell>
 
-                  {/* Monthly Fee */}
-                  <TableCell className="text-center">
-                    <span className="font-semibold text-gray-900">
-                      Rs. {student.monthlyFee}
-                    </span>
+                  {/* Fee */}
+                  <TableCell className="py-3.5 text-center">
+                    <span className="text-sm font-semibold text-slate-800">Rs. {student.monthlyFee}</span>
                   </TableCell>
 
                   {/* Contact */}
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center gap-1 text-gray-600 text-sm">
-                      <Phone className="w-3.5 h-3.5" />
-                      {student.contact}
-                    </div>
+                  <TableCell className="py-3.5 text-center">
+                    <span className="text-sm text-slate-500">{student.contact}</span>
                   </TableCell>
 
                   {/* Actions */}
-                  <TableCell>
-                    <div className="flex items-center justify-center gap-2">
-                      <button className="p-2 hover:bg-blue-100 rounded-lg transition-colors group">
-                        <Edit2 className="w-4 h-4 text-gray-600 group-hover:text-blue-600" />
+                  <TableCell className="py-3.5 pr-6 text-center">
+                    <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button className="p-1.5 rounded-lg hover:bg-blue-50 transition-colors">
+                        <Edit2 className="w-3.5 h-3.5 text-slate-400 hover:text-blue-500" />
                       </button>
-                      <button className="p-2 hover:bg-red-100 rounded-lg transition-colors group">
-                        <Trash2 className="w-4 h-4 text-gray-600 group-hover:text-red-600" />
+                      <button className="p-1.5 rounded-lg hover:bg-red-50 transition-colors">
+                        <Trash2 className="w-3.5 h-3.5 text-slate-400 hover:text-red-500" />
                       </button>
                     </div>
                   </TableCell>
@@ -232,20 +226,80 @@ function StudentTable({ students }) {
               ))}
             </TableBody>
           </Table>
+
+          {/* Table Pagination */}
+          <div className="flex items-center justify-between px-6 py-4 border-t border-slate-50 bg-slate-50/40">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 transition-colors shadow-sm"
+            >
+              <ChevronLeft className="w-4 h-4" /> Previous
+            </button>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(7, totalPages) }, (_, i) => i + 1).map((n) => (
+                <button
+                  key={n}
+                  onClick={() => setPage(n)}
+                  className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                    page === n
+                      ? "bg-slate-800 text-white shadow-sm"
+                      : "text-slate-500 hover:bg-slate-100"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+              {totalPages > 7 && <span className="text-slate-400 px-1">…</span>}
+            </div>
+
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium bg-slate-800 text-white hover:bg-slate-700 disabled:opacity-40 transition-colors shadow-sm"
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-        {/* Pagination */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 px-4 sm:px-6 py-4 border-t bg-gray-50">
-          <button className="w-full sm:w-auto px-4 py-2 rounded-lg hover:bg-white border border-gray-300 font-medium text-gray-700 transition-colors shadow-sm">
-            Previous
-          </button>
-          <span className="text-sm font-medium text-gray-600">
-            Page <span className="text-blue-600 font-semibold">1</span> of 12
-          </span>
-          <button className="w-full sm:w-auto px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors shadow-sm">
-            Next
-          </button>
+        {/* ── MOBILE CARDS (< lg) ── */}
+        <div className="lg:hidden space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-slate-500 flex items-center gap-1.5">
+              <Users className="w-4 h-4 text-slate-400" />
+              <span><span className="font-semibold text-slate-700">{students.length}</span> students</span>
+            </span>
+            <span className="text-xs text-slate-400">Page {page} of {totalPages}</span>
+          </div>
+
+          {students.map((student) => (
+            <StudentCard key={student.id} student={student} />
+          ))}
+
+          {/* Mobile Pagination */}
+          <div className="flex items-center justify-between pt-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 transition-colors shadow-sm"
+            >
+              <ChevronLeft className="w-4 h-4" /> Prev
+            </button>
+            <span className="text-sm text-slate-500">
+              Page <span className="font-semibold text-slate-700">{page}</span> of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-slate-800 text-white hover:bg-slate-700 disabled:opacity-40 transition-colors shadow-sm"
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
+
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const studentSchema = new mongoose.Schema(
   {
     GrNumber: {
-      type: String,
+      type: Number,
       required: true,
       unique: true,
       trim: true,
@@ -56,9 +56,21 @@ const studentSchema = new mongoose.Schema(
     LastFeeUpdate: {
       type: Date,
     },
+   profileImage: {
+    public_id: {
+      type: String,
+      required: true,
+    },
+    url: {
+    type: String,  
+  },
+  
+  }
+    
+    
   },
   { timestamps: true }
 );
 
-const student=  mongoose.model("Student", studentSchema);
-module.exports = student
+const Student = mongoose.model("Student", studentSchema);
+module.exports = Student;

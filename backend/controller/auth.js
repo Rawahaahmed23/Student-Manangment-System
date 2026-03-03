@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const Admin = require('../schema/AdminSchema')
 const transporter = require('../nodemailer/nodemailer')
 
+
 //  Singup 
 const Singup = async(req,res)=>{
  try{

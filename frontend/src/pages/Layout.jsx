@@ -7,10 +7,10 @@ function Layout() {
     
     <div className="flex flex-col">
       <Header />
-      {/* 👇 Sidebar hamesha visible rahega */}
+   
       <Sidebar />
 
-      {/* 👇 Yahan pages change honge */}
+
       <div className="flex-1 p-4">
         <Outlet />
       </div>

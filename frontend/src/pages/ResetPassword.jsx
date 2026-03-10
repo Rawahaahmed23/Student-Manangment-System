@@ -27,7 +27,7 @@ export default function VerifyOTP() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // ── OTP handlers ──────────────────────────────────────────
+  // ── OTP handlers
   const handleOtpChange = (index, value) => {
     if (!/^\d?$/.test(value)) return;
     const updated = [...otp];
@@ -54,7 +54,7 @@ export default function VerifyOTP() {
     otpRefs.current[Math.min(pasted.length, 5)]?.focus();
   };
 
-  // ── OTP Verify ────────────────────────────────────────────
+  // ── OTP Verify 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setError("");
@@ -82,7 +82,7 @@ export default function VerifyOTP() {
         return;
       }
 
-      // OTP sahi — password step pe jao
+   
       verifiedOtp.current = otpCode;
       setStep("password");
 

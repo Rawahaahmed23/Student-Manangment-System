@@ -1,61 +1,73 @@
-import './index.css'
-import RegistrationForm from "./pages/Register"
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginForm from './pages/Login';
-import StudentDetail from './pages/StudentData';
-import StudentRegistrationForm from './pages/AddStudent';
-import Layout from './pages/Layout';
-import Dashboard from './pages/Dashboard';
-import FeesTracker from './pages/FeesTracker';
-import { AuthProvider } from './Store/useAuth';      
-import ProtectedRoute from './components/Protectiveroute';
-import ForgotPassword from './pages/ForgotPass';
-import PublicRoute from './Routes/publicRoutes';
+import "./index.css";
 
-import ResetPassword from './pages/ResetPassword';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import RegistrationForm from "./pages/Register";
+import LoginForm from "./pages/Login";
+import StudentDetail from "./pages/StudentData";
+import StudentRegistrationForm from "./pages/AddStudent";
+import Layout from "./pages/Layout";
+import Dashboard from "./pages/Dashboard";
+import FeesTracker from "./pages/FeesTracker";
+import ForgotPassword from "./pages/ForgotPass";
+import ResetPassword from "./pages/ResetPassword";
+
+import { AuthProvider } from "./Store/useAuth";
+import { StudentProvider } from "./Store/StudentData";
+
+
+import ProtectedRoute from "./components/Protectiveroute";
+import PublicRoute from "./Routes/publicRoutes";
+
 function App() {
   return (
-    <AuthProvider>   
-    <BrowserRouter>
-  <Routes>
+    <AuthProvider>
+      <StudentProvider>
+        <BrowserRouter>
+          <Routes>
 
-    <Route path="/" element={
-  <PublicRoute>
-    <LoginForm />
-  </PublicRoute>
-} />
+            {/* Public Routes */}
+            <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <LoginForm />
+                </PublicRoute>
+              }
+            />
 
-<Route path="/register" element={
-  <PublicRoute>
-    <RegistrationForm />
-  </PublicRoute>
-} />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <RegistrationForm />
+                </PublicRoute>
+              }
+            />
 
-    <Route
-      element={
-        <ProtectedRoute>
-          <Layout />
-        </ProtectedRoute>
-      }
-    >
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/studentdetails" element={<StudentDetail />} />
-      <Route path="/addstudent" element={<StudentRegistrationForm />} />
-      <Route path="/feestracker" element={<FeesTracker />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
+            {/* Protected Routes */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/studentdetails" element={<StudentDetail />} />
+              <Route path="/addstudent" element={<StudentRegistrationForm />} />
+              <Route path="/feestracker" element={<FeesTracker />} />
+              
+            </Route>
 
-
-    </Route>
-
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-
-<Route path="/ResetPassword" element={<ResetPassword />} />
-
-
-  </Routes>
-</BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </StudentProvider>
     </AuthProvider>
-  )
+  );
 }
 
 export default App;

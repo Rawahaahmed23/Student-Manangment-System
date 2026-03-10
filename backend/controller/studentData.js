@@ -12,13 +12,13 @@ const AddStudent = async (req, res) => {
       GrNumber, StudentName, FatherName,
       Class, Gender, DateOfBirth,
       DateOfAdmission, MonthlyFee,
-      FeeStatus, LastFeeUpdate
+      
     } = req.body;
      const existingStudent = await Student.findOne({ GrNumber });
     if(existingStudent){
       return res.status(400).json({ message: "Student already exists" });
     }
-     let profileImage = { public_id: null, url: null };
+    const profileImage = req.body.profileImage;
     if(req.file){
       const uploadResult = await uploadToCloudinary(req.file.buffer);
       profileImage = {
@@ -36,8 +36,8 @@ const AddStudent = async (req, res) => {
       DateOfBirth: moment(DateOfBirth, 'DD-MMM-YYYY').toDate(),         
       DateOfAdmission: moment(DateOfAdmission, 'DD-MMM-YYYY').toDate(),
       MonthlyFee,
-      FeeStatus,
-      LastFeeUpdate: moment(LastFeeUpdate, 'DD-MMM-YYYY').toDate(),    
+     
+      
       profileImage
     });
 
@@ -148,8 +148,22 @@ const EditStudent = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-const getStudent =async(req,res)=>{}
 
+
+const getStudent = async (req, res) => {
+  try {
+    const students = await Student.find();  
+    res.status(200).json({
+      success: true,
+      data: students
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 
 

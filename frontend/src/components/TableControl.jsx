@@ -1,115 +1,83 @@
-import React, { useState } from 'react';
-import { Search, ChevronDown, } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue ,SelectGroup,SelectLabel} from '@/components/ui/select';
+import { Search } from "lucide-react";
+import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { BsGenderFemale } from "react-icons/bs";
+import { BsGenderMale } from "react-icons/bs";
+
+import { MdAccountCircle } from "react-icons/md";
 
 
-const TableControl = () => {
-  const [activeTab, setActiveTab] = useState('all');
+
+
+function TableControl({ search, setSearch }) {
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
 
   return (
-    <div className="flex-1 flex flex-col bg-white">
-      {/* Controls Section */}
-      <div className="px-20 py-4 border-b space-y-4">
-        {/* Search and Action Buttons */}
-        <div className="flex items-center justify-between">
-          <div className="flex-1 max-w-xs">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <Input 
-                placeholder="Search..." 
-                className="pl-10 bg-gray-50 border-gray-200"
-              />
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-           
-            <Button variant="outline" size="sm">
-              Download as pdf 
-            </Button>
-        
-          </div>
-        </div>
-
-        {/* {Gender} */}
-        <div className="flex items-end justify-end">
-         
-
-          <div className="flex items-center space-x-2">
-    <Select>
-  <SelectTrigger className="w-32 h-8 text-xs bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-indigo-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 font-semibold text-gray-700">
-    <SelectValue placeholder="Gender" />
-  </SelectTrigger>
-  <SelectContent 
-    position="popper" 
-    sideOffset={5}
-    className="bg-white border-2 border-indigo-100 rounded-lg shadow-lg z-50"
-  >
-    <div className="max-h-[150px] overflow-y-auto">
-      <SelectGroup>
-        <SelectLabel className="font-bold text-indigo-600 px-2 py-1.5 text-xs sticky top-0 bg-white z-10">
-          Select Gender
-        </SelectLabel>
-        <SelectItem 
-          value="male" 
-          className="text-xs font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer transition-colors duration-150 rounded-md mx-1"
-        >
-          Male
-        </SelectItem>
-        <SelectItem 
-          value="female"
-          className="text-xs font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer transition-colors duration-150 rounded-md mx-1"
-        >
-          Female
-        </SelectItem>
-      </SelectGroup>
-    </div>
-  </SelectContent>
-</Select>
-
-
-
-
-<Select defaultValue="1">
-  <SelectTrigger className="w-full max-w-xs bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-indigo-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 font-semibold text-gray-700">
-    <SelectValue placeholder="Select a class" />
-  </SelectTrigger>
-  <SelectContent 
-    className="bg-white border-2 border-indigo-100 rounded-lg shadow-lg mt-0"
-    position="popper"
-    sideOffset={5}
-  >
-    <div className="max-h-[200px] overflow-y-auto ">
-      <SelectGroup>
-        <SelectLabel className="font-bold text-indigo-600 px-2 py-1.5 text-sm sticky top-0 bg-white z-10">
-          Classes
-        </SelectLabel>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-          <SelectItem 
-            key={num}
-            value={num.toString()} 
-            className="font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer transition-colors duration-150 rounded-md mx-1"
-          >
-            Class {num}
-          </SelectItem>
-        ))}
-      </SelectGroup>
-    </div>
-  </SelectContent>
-</Select>
-          </div>
-        </div>
-
-        {/* Results Count */}
-       
+    <div className="max-w-7xl mx-auto space-y-5">
+      <div>
+        <h1 className="text-xl font-bold text-slate-800">Student Directory</h1>
+        <p className="text-slate-400 text-sm">Manage and view all student records</p>
       </div>
 
-      {/* Table */}
-      
+      <div className="flex flex-wrap items-center gap-2">
+
+        {/* Search */}
+        <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm w-full sm:w-48 lg:w-64">
+          <Search className="w-4 h-4 shrink-0 text-slate-400" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search students..."
+            className="bg-transparent outline-none text-slate-600 placeholder-slate-400 w-full text-sm"
+          />
+        </div>
+
+        {/* Class Select */}
+       {/* Class Select */}
+<Select value={selectedClass} onValueChange={setSelectedClass}>
+  <SelectTrigger className="w-36 rounded-xl border-slate-200 shadow-sm text-sm bg-white">
+    <SelectValue placeholder=" Class" />
+  </SelectTrigger>
+  <SelectContent position="popper" sideOffset={4} className="z-[9999] bg-white !py-0">
+    <SelectItem className="py-1.5 text-sm" value="all">All Classes</SelectItem>
+    {["Class 1","Class 2","Class 3","Class 4","Class 5","Class 6"].map((c) => (
+      <SelectItem className="py-1.5 text-sm" key={c} value={c}>{c}</SelectItem>
+    ))}
+  </SelectContent>
+</Select>
+
+{/* Gender Select */}
+<Select value={selectedGender} onValueChange={setSelectedGender}>
+  <SelectTrigger className="w-36 rounded-xl border-slate-200 shadow-sm text-sm bg-white">
+    <SelectValue placeholder=" Gender" />
+  </SelectTrigger>
+  <SelectContent position="popper" sideOffset={4} className="z-[9999] bg-white !py-0">
+    <SelectItem className="py-1.5 text-sm" value="all">All Genders</SelectItem>
+    <SelectItem className="py-1.5 text-sm" value="male"><BsGenderFemale /> Male</SelectItem>
+    <SelectItem className="py-1.5 text-sm" value="female"><BsGenderMale /> Female</SelectItem>
+  </SelectContent>
+</Select>
+
+        {/* Clear Filters */}
+        {((selectedClass && selectedClass !== "all") || (selectedGender && selectedGender !== "all")) && (
+          <button
+            onClick={() => { setSelectedClass(""); setSelectedGender(""); }}
+            className="text-xs text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg px-2.5 py-1.5 transition-all"
+          >
+            Clear ×
+          </button>
+        )}
+
+      </div>
     </div>
   );
-};
+}
 
 export default TableControl;

@@ -1,14 +1,14 @@
 import React from 'react';
 import { Clock } from "lucide-react";
+import { useStudent } from '@/Store/StudentData';
 
 function RecentActivity() {
-  const activities = [
-    { text: "Ali Khan added to Class 1", icon: "➕", time: "2 min ago" },
-    { text: "Sara Ahmed paid full fee", icon: "✓", time: "15 min ago" },
-    { text: "Voucher generated for Ahmed Raza", icon: "🎟️", time: "1 hour ago" },
-    { text: "Fatima Noor added to Class 1", icon: "➕", time: "2 hours ago" },
-    { text: "Hassan Ali paid monthly fee", icon: "💳", time: "3 hours ago" },
-  ];
+  const { students } = useStudent();
+
+  // Sort by createdAt descending to get recently added students
+  const recentStudents = [...students]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 6); // last 3 added students
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 h-full shadow-sm">
@@ -22,20 +22,31 @@ function RecentActivity() {
       </div>
 
       <div className="space-y-4">
-        {activities.map((activity, index) => (
+        {recentStudents.map((student) => (
           <div 
-            key={index} 
+            key={student._id} 
             className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 hover:bg-slate-50 rounded-xl border border-transparent hover:border-slate-200"
           >
-            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-lg">
-              {activity.icon}
+            {/* Avatar / Image */}
+            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-lg overflow-hidden">
+              {student.profileImage?.url ? (
+                <img 
+                  src={student.profileImage.url} 
+                  alt={student.StudentName} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                student.StudentName.charAt(0)
+              )}
             </div>
+
+            {/* Info */}
             <div className="flex-1 min-w-0">
               <p className="text-sm sm:text-base text-slate-700 font-medium">
-                {activity.text}
+                {student.StudentName}
               </p>
               <p className="text-xs text-slate-500 mt-1">
-                {activity.time}
+                {new Date(student.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </p>
             </div>
           </div>

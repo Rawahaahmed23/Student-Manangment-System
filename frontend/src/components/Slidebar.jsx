@@ -16,9 +16,9 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Desktop Sidebar */}
+
       <div
-        className={`hidden md:flex fixed top-0 left-0 h-full bg-slate-800 text-white flex-col
+        className={`hidden lg:flex fixed top-0 left-0 h-full bg-slate-800 text-white flex-col
         transition-all duration-300 ease-in-out z-40
         ${isOpen ? "w-64" : "w-16"}`}
       >
@@ -39,8 +39,7 @@ const Sidebar = () => {
         </nav>
       </div>
 
-      {/* Mobile Bottom Navbar */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-slate-800 text-white flex justify-around items-center py-2 z-50">
+      <div className="lg:hidden fixed bottom-0 left-0 w-full bg-slate-800 text-white flex justify-around items-center py-2 z-50">
         {menuItems.map((item, index) => (
           <NavLink
             key={index}
@@ -56,9 +55,8 @@ const Sidebar = () => {
         ))}
       </div>
 
-      {/* Toggle Button (Desktop only) */}
       <button
-        className="hidden md:flex fixed top-4 left-2 z-50 w-10 h-10 items-center justify-center text-white bg-slate-800 rounded hover:bg-slate-700 transition-colors"
+        className="hidden lg:flex fixed top-4 left-2 z-50 w-10 h-10 items-center justify-center text-white bg-slate-800 rounded hover:bg-slate-700 transition-colors"
         onClick={() => setIsOpen(!isOpen)}
       >
         <Menu size={24} />

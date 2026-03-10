@@ -55,6 +55,7 @@ const studentSchema = new mongoose.Schema(
 
     LastFeeUpdate: {
       type: Date,
+      required:false
     },
    profileImage: {
     public_id: {

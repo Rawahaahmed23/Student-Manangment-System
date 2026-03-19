@@ -7,6 +7,7 @@ const app = express()
 const authRoutes = require('./routes/auth')
 const errormiddleware = require('./middleware/errormiddleware')
 const StudentRoutes = require('./routes/StudentRoute')
+const feesHandler = require('./routes/feeroutes')
 app.use(cors({
     origin: 'http://localhost:5173', 
     credentials: true 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/',authRoutes)
 app.use('/Student',StudentRoutes)
+app.use('/fee',feesHandler)
 app.use(errormiddleware)
 
 const Port = 5000

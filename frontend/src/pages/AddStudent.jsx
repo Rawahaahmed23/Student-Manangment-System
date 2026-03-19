@@ -66,54 +66,46 @@ const StudentRegistrationForm = () => {
   const handleSubmit = async () => {
     // Basic validation
     if (!formData.GrNumber || !formData.StudentName) {
-      toast.error("GrNumber Must me required.");
+      toast.error("GrNumber aur StudentName zaroori hain.");
       return;
     }
 
     setLoading(true);
     try {
-      let imageUrl = null;
-      let publicId = null;
+      // ✅ Sirf FormData banao — Cloudinary upload frontend se hata diya
+      // Backend khud image Cloudinary pe upload karega
+      const fd = new FormData();
 
-      // Step 1: Image Cloudinary pe upload karo
+      // Text fields append karo
+      fd.append("GrNumber", formData.GrNumber);
+      fd.append("StudentName", formData.StudentName);
+      fd.append("FatherName", formData.FatherName);
+      fd.append("Class", formData.Class);
+      fd.append("Gender", formData.Gender);
+      fd.append("DateOfBirth", formData.DateOfBirth);
+      fd.append("DateOfAdmission", formData.DateOfAdmission);
+      fd.append("MonthlyFee", formData.MonthlyFee);
+      fd.append("FeeStatus", formData.FeeStatus);
+      fd.append("LastFeeUpdate", formData.LastFeeUpdate);
+
+      // Image file append karo (agar hai to)
       if (formData.profileImage) {
-        const fd = new FormData();
-        fd.append("file", formData.profileImage);
-        fd.append("upload_preset", "rawaha");
-        fd.append("cloud_name", "dtx7n84vi");
-        fd.append("folder", "students");
-
-        const imgRes = await fetch("https://api.cloudinary.com/v1_1/dtx7n84vi/image/upload", {
-          method: "POST",
-          body: fd,
-        });
-
-        if (!imgRes.ok) {
-          throw new Error("Image upload failed. Please try again.");
-        }
-
-        const imgData = await imgRes.json();
-        imageUrl = imgData.secure_url;
-        publicId = imgData.public_id;
+        fd.append("profileImage", formData.profileImage);
       }
 
-      // Step 2: Baqi data JSON mein bhejo
+      // ✅ Ek hi request — backend ko FormData bhejo
       const response = await fetch("http://localhost:5000/Student/add_Student", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          profileImage: { url: imageUrl, public_id: publicId },
-        }),
+        // ⚠️ Content-Type header mat lagao — browser khud multipart/form-data set karega
+        body: fd,
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        toast.success("Student add sucessful");
+        toast.success(data.message || data.extraDetails);
         handleReset();
       } else {
-        // Backend se message + extraDetails dono combine karke show karo
         const errMsg = [data?.message, data?.extraDetails].filter(Boolean).join(" — ");
         throw new Error(errMsg || "Server error. Dobara try karein.");
       }

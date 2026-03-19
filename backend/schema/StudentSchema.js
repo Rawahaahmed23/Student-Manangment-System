@@ -47,31 +47,35 @@ const studentSchema = new mongoose.Schema(
       required: true,
     },
 
-    FeeStatus: {
-      type: String,
-      enum: ["Paid", "Unpaid"],
-      default: "Unpaid",
+    // 🔥 NEW FIELDS
+    paidMonths: {
+      type: [String],
+      default: [],
+    },
+
+    totalMonths: {
+      type: [String],
+      default: [
+        "January","February","March","April","May","June",
+        "July","August","September","October","November","December"
+      ],
     },
 
     LastFeeUpdate: {
       type: Date,
-      required:false
     },
-   profileImage: {
-    public_id: {
-      type: String,
-      required: true,
+
+    profileImage: {
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+      },
     },
-    url: {
-    type: String,  
-  },
-  
-  }
-    
-    
   },
   { timestamps: true }
 );
 
-const Student = mongoose.model("Student", studentSchema);
-module.exports = Student;
+module.exports = mongoose.model("Student", studentSchema);

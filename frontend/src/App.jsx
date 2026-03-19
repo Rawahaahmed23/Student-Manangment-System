@@ -10,6 +10,7 @@ import Layout from "./pages/Layout";
 import Dashboard from "./pages/Dashboard";
 import FeesTracker from "./pages/FeesTracker";
 import ForgotPassword from "./pages/ForgotPass";
+import EditStudent from "./pages/EditStudent";
 import ResetPassword from "./pages/ResetPassword";
 
 import { AuthProvider } from "./Store/useAuth";
@@ -60,6 +61,7 @@ function App() {
               <Route path="/studentdetails" element={<StudentDetail />} />
               <Route path="/addstudent" element={<StudentRegistrationForm />} />
               <Route path="/feestracker" element={<FeesTracker />} />
+              <Route path="/edit-student/:id" element={<EditStudent />} />
               
             </Route>
 

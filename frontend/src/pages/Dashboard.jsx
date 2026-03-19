@@ -15,7 +15,7 @@ const stats = {
 };
 
 const Dashboard = () => {
-  const { students } = useStudent(); // ✅ Context se students le rahe hain
+  const { students } = useStudent(); 
 
   return (
     <div className="min-h-2xl">

@@ -51,10 +51,7 @@ const studentValidationSchema = yup.object({
     .positive(),
 
 
-  profileImage: yup.object({
-    public_id: yup.string().required("Image public_id is required"),
-    url: yup.string().url("Invalid image url"),
-  })
+
 
 });
 

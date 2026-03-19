@@ -2,7 +2,7 @@ import { useState } from "react";
 import StudentTable from "@/pages/Table";
 import { useStudent } from "../Store/StudentData";
 
-const App = () => {
+const StudentData = () => {
   const { students } = useStudent();
   const [selectedStudent, setSelectedStudent] = useState(null);
 
@@ -32,4 +32,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default StudentData;

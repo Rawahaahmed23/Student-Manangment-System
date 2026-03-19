@@ -21,7 +21,7 @@ route.put(
   validator(studentValidationSchema),
   Student.EditStudent
 )
-
+route.get("/download",Student.generateStudentPDF);
 route.delete('/delete/:_id', Student.deleteStudent)
 
 module.exports = route

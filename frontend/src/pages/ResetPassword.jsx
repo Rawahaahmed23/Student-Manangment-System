@@ -27,7 +27,7 @@ export default function VerifyOTP() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // ── OTP handlers
+
   const handleOtpChange = (index, value) => {
     if (!/^\d?$/.test(value)) return;
     const updated = [...otp];

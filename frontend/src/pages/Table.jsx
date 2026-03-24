@@ -22,7 +22,6 @@ const GENDER_COLORS = {
   Female: "bg-pink-50 text-pink-600",
 };
 
-// Profile Avatar
 function Avatar({ firstName, lastName, profileImage, size = "md" }) {
   const initials = `${firstName?.charAt(0) ?? ""}${lastName?.charAt(0) ?? ""}`;
   const sizeClass = size === "sm" ? "w-8 h-8 text-xs" : "w-10 h-10 text-sm";
@@ -44,13 +43,10 @@ function Avatar({ firstName, lastName, profileImage, size = "md" }) {
   );
 }
 
-
-
 function StudentTable({ students = [] }) {
   const { deleteStudent } = useStudent();
   const navigate = useNavigate();
 
-  // Filters (search, class, gender) + filteredStudents
   const {
     search,
     setSearch,
@@ -61,7 +57,6 @@ function StudentTable({ students = [] }) {
     filteredStudents,
   } = useStudentFilters(students);
 
-
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE);
   const paginatedStudents = filteredStudents.slice(
@@ -69,6 +64,7 @@ function StudentTable({ students = [] }) {
     page * ITEMS_PER_PAGE
   );
 
+  const emptyRowsCount = ITEMS_PER_PAGE - paginatedStudents.length;
 
   const [popup, setPopup] = useState({
     open: false,
@@ -94,7 +90,7 @@ function StudentTable({ students = [] }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
 
       <DeleteConfirmPopup
         isOpen={popup.open}
@@ -114,7 +110,7 @@ function StudentTable({ students = [] }) {
 
       <div className="max-w-7xl mx-auto space-y-5">
 
-        {/* ── Desktop Table ── */}
+        {/* Desktop Table */}
         <div className="hidden lg:block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
 
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-50">
@@ -149,11 +145,12 @@ function StudentTable({ students = [] }) {
             </TableHeader>
 
             <TableBody>
+              {/* Real rows */}
               {paginatedStudents.length > 0 ? (
                 paginatedStudents.map((student) => (
                   <TableRow
                     key={student._id}
-                    className="border-b border-slate-50 hover:bg-slate-50/80 transition-colors"
+                    className="border-b border-slate-50 hover:bg-slate-50/80 transition-colors h-[57px]"
                   >
                     <TableCell className="pl-6 py-3.5">
                       <span className="text-xs font-mono font-semibold text-slate-400">
@@ -247,12 +244,21 @@ function StudentTable({ students = [] }) {
                   </TableRow>
                 ))
               ) : (
-                <TableRow>
-                  <TableCell colSpan={10} className="text-center py-12 text-slate-400 text-sm">
+                <TableRow className="h-[57px]">
+                  <TableCell colSpan={10} className="text-center text-slate-400 text-sm">
                     No students found.
                   </TableCell>
                 </TableRow>
               )}
+
+              {/* Empty placeholder rows to keep fixed height */}
+              {Array.from({ length: paginatedStudents.length === 0 ? emptyRowsCount - 1 : emptyRowsCount }).map((_, i) => (
+                <TableRow key={`empty-${i}`} className="h-[57px] border-b border-slate-50">
+                  {Array.from({ length: 10 }).map((_, j) => (
+                    <TableCell key={j} />
+                  ))}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
 
@@ -293,7 +299,7 @@ function StudentTable({ students = [] }) {
           </div>
         </div>
 
-   
+        {/* Mobile Cards */}
         <div className="lg:hidden space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-slate-500 flex items-center gap-1.5">

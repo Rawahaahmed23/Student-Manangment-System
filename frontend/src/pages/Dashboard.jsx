@@ -8,16 +8,20 @@ import RecentStudents from "@/components/RecentStudent";
 import { useStudent } from "@/Store/StudentData";
 import { useStudentFilters } from "@/Hooks/filterStudent";
 
-const stats = {
-  totalStudents: 520,
-  paidStudents: 420,
-  notPaidStudents: 100,
-  newAdmissions: 18,
-};
-
 const Dashboard = () => {
-  const { students } = useStudent(); 
-    const { filteredStudents, classFilter, setClassFilter } = useStudentFilters(students);
+  const { students } = useStudent();
+  const { filteredStudents } = useStudentFilters(students);
+
+  const totalStudents = students?.length ?? 0;
+  const paidStudents = students?.filter((s) => s.feeStatus === "Paid").length ?? 0;
+  const unpaidStudents = students?.filter((s) => s.feeStatus !== "Paid").length ?? 0;
+
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const newAdmissions = students?.filter((s) => {
+    const d = new Date(s.DateOfAdmission);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  }).length ?? 0;
 
   return (
     <div className="min-h-2xl">
@@ -34,45 +38,42 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8 sm:mb-10">
           <StatCard
             title="Total Students"
-            value={students?.length ?? stats.totalStudents}
+            value={totalStudents}
             icon={Users}
             trend="+12% from last month"
             color="blue"
           />
           <StatCard
             title="Paid Students"
-            value={stats.paidStudents}
+            value={paidStudents}
             icon={CheckCircle}
             trend="+15 this week"
             color="blue"
           />
           <StatCard
-            title="Not Paid Students"
-            value={stats.notPaidStudents}
+            title="Unpaid Students"
+            value={unpaidStudents}
             icon={XCircle}
-            trend="-5 pending"
+            trend="Pending fee"
             color="blue"
           />
           <StatCard
             title="New Admissions"
-            value={stats.newAdmissions}
+            value={newAdmissions}
             icon={UserCheck}
             trend="This month"
             color="blue"
           />
         </div>
 
-        {/* Analytics Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 sm:gap-6 mb-8 sm:mb-10 w-full">
-          <div className="lg:col-span-2 w-full h-full">
-            <FeeChart className="w-full h-full" />
+        <div className="grid grid-cols-1 gap-6 sm:gap-6 mb-8 sm:mb-10 w-full">
+          <div className="w-full h-full">
+            <FeeChart />
           </div>
         </div>
 
-        {/* Bottom Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      
-      <StudentOverview students={students} filteredStudents={filteredStudents} />
+          <StudentOverview students={students} filteredStudents={filteredStudents} />
           <RecentStudents students={students ?? []} />
           <div className="md:col-span-2 xl:col-span-1">
             <RecentActivity />

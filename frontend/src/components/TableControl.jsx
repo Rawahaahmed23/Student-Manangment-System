@@ -58,19 +58,23 @@ function TableControl({
         </div>
 
         {/* Class Select */}
-        <Select value={classFilter || "all"} onValueChange={(val) => setClassFilter(val === "all" ? "" : val)}>
-          <SelectTrigger className="w-36 rounded-xl border-slate-200 shadow-sm text-sm bg-white">
-            <SelectValue placeholder="Class" />
-          </SelectTrigger>
-          <SelectContent position="popper" sideOffset={4} className="z-[9999] bg-white">
-            <SelectItem value="all">All Classes</SelectItem>
-            {["1", "2", "3", "4", "5", "6"].map((c) => (
-              <SelectItem className="py-1.5 text-sm" key={c} value={c}>
-                Class {c}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+   <Select
+  value={classFilter || "all"}
+  onValueChange={(val) => setClassFilter(val === "all" ? "" : val)}
+>
+  <SelectTrigger className="w-36 rounded-xl border-slate-200 shadow-sm text-sm bg-white">
+    <SelectValue placeholder="Class" />
+  </SelectTrigger>
+
+  <SelectContent position="popper" sideOffset={4} className="z-[9999] bg-white">
+    <SelectItem value="all">All Classes</SelectItem>
+    {Array.from({ length: 10 }, (_, i) => (i + 1).toString()).map((c) => (
+      <SelectItem className="py-1.5 text-sm" key={c} value={c}>
+        Class {c}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
 
         {/* Gender Select */}
         <Select value={genderFilter || "all"} onValueChange={(val) => setGenderFilter(val === "all" ? "" : val)}>

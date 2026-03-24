@@ -52,30 +52,25 @@ const AddStudent = async (req, res) => {
   }
 };
 
-
-const deleteStudent =async(req,res)=>{
-  try{
-
-    const {_id} = req.params
-    const student = await Student.findById(_id)
-    if(!student){
-      return res.status(400).json({message:'Student Not Found'})
-    }
-        if (student.ProfilePicture) {
-          const publicId = student.ProfilePicture
-            .split('/').pop()
-            .split('.')[0];
-          await cloudinary.uploader.destroy(`students/${publicId}`);
-        }
+const deleteStudent = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const student = await Student.findById(_id);
     
-         await Student.findByIdAndDelete(_id);
-        return res.status(200).json({ message: "Student Deleted Successfully" });
-  }
- catch (error) {
+    if (!student) {
+      return res.status(400).json({ message: 'Student Not Found' });
+    }
+if (student.profileImage?.public_id) {
+  await cloudinary.uploader.destroy(student.profileImage.public_id);
+}
+
+    await Student.findByIdAndDelete(_id);
+    return res.status(200).json({ message: 'Student Deleted Successfully' });
+
+  } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-
-}
+};
 
 const EditStudent = async (req, res) => {
   try {

@@ -1,6 +1,5 @@
 import React from 'react';
 import { TrendingUp } from "lucide-react";
-
 const colorSchemes = {
   blue: {
     bg: 'bg-blue-50',
@@ -9,7 +8,6 @@ const colorSchemes = {
   },
 
 };
-
 export default function StatCard({ title, value, trend, icon: Icon, color = 'blue' }) {
   const scheme = colorSchemes[color];
   

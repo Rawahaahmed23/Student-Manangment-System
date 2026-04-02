@@ -1,15 +1,6 @@
 import React from "react";
 import { TriangleAlert, X } from "lucide-react";
 
-/**
- * Reusable Delete Confirmation Popup
- *
- * Props:
- * - isOpen: boolean         — popup show/hide
- * - onConfirm: () => void   — delete confirm hone pe
- * - onCancel: () => void    — cancel hone pe
- * - studentName: string     — optional, student ka naam dikhane ke liye
- */
 
 const DeleteConfirmPopup = ({ isOpen, onConfirm, onCancel, studentName }) => {
   if (!isOpen) return null;

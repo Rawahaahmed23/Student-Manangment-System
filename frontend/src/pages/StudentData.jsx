@@ -3,7 +3,7 @@ import StudentTable from "@/pages/Table";
 import { useStudent } from "../Store/StudentData";
 
 const StudentData = () => {
-  const { students } = useStudent();
+  const { students,getf } = useStudent();
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   const handleSelectStudent = (student) => {

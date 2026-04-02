@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import Input from '../components/Input';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from "@/components/ui/spinner"
+import { toast } from 'react-toastify';
 
 
 export default function RegistrationForm() {
@@ -31,11 +32,13 @@ const formData = {
      })
 
      const data = await response.json()
-     if(!response.ok){
-       setError(data.message || data.extraDetails);
-      setloading(false);
-      return;
-     }
+ if(!response.ok){
+    toast.error(data.message || data.extraDetails); // ← error toast
+    setloading(false);
+    return; 
+}
+toast.success("Registration successful!");
+Navigate('/');
     }catch(error){
        console.log(error);
        
@@ -48,7 +51,7 @@ const formData = {
 
   return (
     <div className="flex min-h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Left Section - Student Image */}
+     
       <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-sky-500/10 to-transparent z-10"></div>
         <img 
@@ -58,14 +61,14 @@ const formData = {
         />
       </div>
 
-      {/* Right Section - Form */}
+   
       <div className="flex-1 bg-white flex items-center justify-center p-8 lg:p-12 relative shadow-2xl">
         <div className="w-full max-w-md">
-          {/* Logo/Icon */}
+  
         
           
 
-          {/* Title */}
+       
           <div className="mb-10">
            <h1 className="text-4xl lg:text-5xl font-bold text-gray-800  mb-3">
 Sign up
@@ -78,7 +81,7 @@ Sign up
           
           <p className="text-sm text-gray-600 mb-8">
             Already have an account?{' '}
-            <a href="/login" className="text-sky-500 font-semibold hover:text-sky-600 transition-colors">
+            <a href="/" className="text-sky-500 font-semibold hover:text-sky-600 transition-colors">
               Login here
             </a>
           </p>
@@ -137,7 +140,7 @@ Sign up
 
          
 
-          {/* Footer Text */}
+        
        
         </div>
       </div>

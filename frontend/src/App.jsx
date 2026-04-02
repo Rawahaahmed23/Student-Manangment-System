@@ -12,7 +12,7 @@ import FeesTracker from "./pages/FeesTracker";
 import ForgotPassword from "./pages/ForgotPass";
 import EditStudent from "./pages/EditStudent";
 import ResetPassword from "./pages/ResetPassword";
-
+import GenerateFeesVoucher from "./pages/Geneartefees";
 import { AuthProvider } from "./Store/useAuth";
 import { StudentProvider } from "./Store/StudentData";
 
@@ -22,9 +22,9 @@ import PublicRoute from "./Routes/publicRoutes";
 
 function App() {
   return (
+        <BrowserRouter>
     <AuthProvider>
       <StudentProvider>
-        <BrowserRouter>
           <Routes>
 
             {/* Public Routes */}
@@ -45,9 +45,9 @@ function App() {
                 </PublicRoute>
               }
             />
-
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+           <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/ResetPassword" element={<ResetPassword />} />
+ 
 
             {/* Protected Routes */}
             <Route
@@ -61,14 +61,15 @@ function App() {
               <Route path="/studentdetails" element={<StudentDetail />} />
               <Route path="/addstudent" element={<StudentRegistrationForm />} />
               <Route path="/feestracker" element={<FeesTracker />} />
+              <Route path="/feesvocher" element={<GenerateFeesVoucher />} />
               <Route path="/edit-student/:id" element={<EditStudent />} />
               
             </Route>
 
           </Routes>
-        </BrowserRouter>
       </StudentProvider>
     </AuthProvider>
+        </BrowserRouter>
   );
 }
 

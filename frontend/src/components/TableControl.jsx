@@ -17,25 +17,25 @@ function TableControl({
 }) {
   const hasActiveFilters = classFilter || genderFilter;
 
-  const GeneratePdf = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/Student/download`, {
-        method: "GET",
-      });
+const GeneratePdf = async () => {
+  try {
+    const response = await fetch(`http://localhost:5000/Student/download`, {
+      method: "GET",
+    });
 
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "students.pdf";
-        a.click();
-        window.URL.revokeObjectURL(url);
-      }
-    } catch (error) {
-      console.log(error);
+    if (response.ok) {
+      const blob = await response.blob({ type: "application/zip" }); 
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "StudentRegister.zip"; 
+      a.click();
+      window.URL.revokeObjectURL(url);
     }
-  };
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
     <div className="max-w-7xl mx-auto space-y-5 my-6">
@@ -58,7 +58,7 @@ function TableControl({
         </div>
 
         {/* Class Select */}
-   <Select
+  <Select
   value={classFilter || "all"}
   onValueChange={(val) => setClassFilter(val === "all" ? "" : val)}
 >
@@ -68,11 +68,14 @@ function TableControl({
 
   <SelectContent position="popper" sideOffset={4} className="z-[9999] bg-white">
     <SelectItem value="all">All Classes</SelectItem>
-    {Array.from({ length: 10 }, (_, i) => (i + 1).toString()).map((c) => (
-      <SelectItem className="py-1.5 text-sm" key={c} value={c}>
-        Class {c}
-      </SelectItem>
+    <SelectItem value="Reception">Reception</SelectItem>
+    <SelectItem value="Junior">Junior</SelectItem>
+    <SelectItem value="Senior">Senior</SelectItem>
+    {[1,2,3,4,5,6,7,8].map(n => (
+      <SelectItem key={n} value={`Class ${n}`}>Class {n}</SelectItem>
     ))}
+    <SelectItem value="Hifz">Hifz</SelectItem>
+    <SelectItem value="Nazra">Nazra</SelectItem>
   </SelectContent>
 </Select>
 

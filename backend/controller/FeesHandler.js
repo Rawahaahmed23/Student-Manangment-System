@@ -96,30 +96,70 @@ const Unpaid = async (req, res) => {
   }
 };
 
-const getAllFeeStatus = async (req, res) => {
+
+const deleteFeeRecord = async (req, res) => {
   try {
-    const students = await Student.find();
+    const { id } = req.params;
+    const { year } = req.body;
 
-    const now = new Date();
+    const yearNum = Number(year);
 
-    const result = students.map((student) => {
-      let feeStatus = "Paid";
+    const student = await Student.findById(id);
+    if (!student) return res.status(404).json({ message: "Student not found" });
 
-      if (student.nextDueDate && now > student.nextDueDate) {
-        feeStatus = "Unpaid";
-      }
+    const recordIndex = student.feeRecords.findIndex(
+      (y) => Number(y.year) === yearNum
+    );
 
-      return {
-        name: student.StudentName,
-        feeStatus,
-        nextDueDate: student.nextDueDate
-      };
+    if (recordIndex === -1) {
+      return res.status(404).json({ message: `No fee record found for year ${year}` });
+    }
+
+    
+    student.feeRecords.splice(recordIndex, 1);
+
+
+    const hasAnyPaidRecord = student.feeRecords.some(
+      (y) => y.paidMonths.length > 0
+    );
+
+    student.feeStatus = hasAnyPaidRecord ? "Paid" : "Unpaid";
+    student.nextDueDate = "";
+    student.LastFeeUpdate = new Date();
+
+    student.markModified("feeRecords");
+    await student.save();
+
+    res.json({
+      message: `Fee record for year ${year} deleted successfully`,
+      remainingRecords: student.feeRecords,
     });
 
-    res.json(result);
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
+
+  
 };
 
-module.exports = { markpaid, Unpaid,};
+
+const getFeeRecords = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const student = await Student.findById(id);
+    console.log(student);
+    
+
+       console.log("Received ID:", id); // Add this
+
+    if (!student) {
+      return res.status(404).json({ success: false, message: "Student not found" });
+    }
+
+    res.status(200).json({ success: true, data: student });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+module.exports = { markpaid, Unpaid,deleteFeeRecord,getFeeRecords};

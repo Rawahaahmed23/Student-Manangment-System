@@ -68,15 +68,7 @@ const studentSchema = new mongoose.Schema({
 nextDueDate:{
 type:Date
 },
-  profileImage: {
-    public_id: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-    },
-  },
+
 
 }, { timestamps: true });
 

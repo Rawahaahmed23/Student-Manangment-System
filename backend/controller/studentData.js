@@ -1,7 +1,9 @@
 const Student = require('../schema/StudentSchema')
-const cloudinary = require('cloudinary').v2;
-const puppeteer = require("puppeteer");
-const { uploadToCloudinary } = require("../config/cloudnary")
+
+const PDFDocument = require("pdfkit");
+
+
+const archiver = require("archiver");
 
 
 const moment = require('moment'); 
@@ -20,16 +22,9 @@ const AddStudent = async (req, res) => {
       return res.status(400).json({ message: "Student already exists" });
     }
 
-    // ✅ let use karo — const nahi (reassign hoga agar file aaye)
-    let profileImage = null;
+  
 
-    if (req.file) {
-      const uploadResult = await uploadToCloudinary(req.file.buffer);
-      profileImage = {
-        public_id: uploadResult.public_id,
-        url: uploadResult.secure_url,
-      };
-    }
+
 
     const student = new Student({
       GrNumber,
@@ -41,7 +36,7 @@ const AddStudent = async (req, res) => {
       DateOfBirth: moment(DateOfBirth, 'YYYY-MM-DD').toDate(),
       DateOfAdmission: moment(DateOfAdmission, 'YYYY-MM-DD').toDate(),
       MonthlyFee,
-      profileImage
+  
     });
 
     await student.save();
@@ -52,6 +47,9 @@ const AddStudent = async (req, res) => {
   }
 };
 
+
+
+
 const deleteStudent = async (req, res) => {
   try {
     const { _id } = req.params;
@@ -60,9 +58,7 @@ const deleteStudent = async (req, res) => {
     if (!student) {
       return res.status(400).json({ message: 'Student Not Found' });
     }
-if (student.profileImage?.public_id) {
-  await cloudinary.uploader.destroy(student.profileImage.public_id);
-}
+
 
     await Student.findByIdAndDelete(_id);
     return res.status(200).json({ message: 'Student Deleted Successfully' });
@@ -71,6 +67,13 @@ if (student.profileImage?.public_id) {
     return res.status(500).json({ message: error.message });
   }
 };
+
+
+
+
+
+
+
 
 const EditStudent = async (req, res) => {
   try {
@@ -94,10 +97,9 @@ const EditStudent = async (req, res) => {
       }
     }
 
-    // ✅ Agar naya image aaya toh purana Cloudinary se delete karo
     if (profileImage?.public_id && profileImage.public_id !== student.profileImage?.public_id) {
       if (student.profileImage?.public_id) {
-        await cloudinary.uploader.destroy(student.profileImage.public_id);
+      await bucket.file(student.profileImage.public_id).delete();
       }
     }
 
@@ -112,7 +114,7 @@ const EditStudent = async (req, res) => {
       ...(MonthlyFee !== undefined && { MonthlyFee }),
       ...(FeeStatus && { FeeStatus }),
       ...(LastFeeUpdate && { LastFeeUpdate }),
-      profileImage: profileImage || student.profileImage, // ✅
+
     };
 
     const updatedStudent = await Student.findByIdAndUpdate(
@@ -163,100 +165,217 @@ const getStudent = async (req, res) => {
 };
 
 
-const generateStudentPDF = async (req, res) => {
-  const students = await Student.find();
 
-let rows = students.map((s, index) => `
-<tr>
-  <td>${s.GrNumber}</td>
-  <td>${s.StudentName}</td>
-  <td>${s.FatherName}</td>
-  <td>${s.Class}</td>
-  <td>${s.Gender}</td>
-  <td>${new Date(s.DateOfBirth).toLocaleDateString()}</td>
-  <td>${new Date(s.DateOfAdmission).toLocaleDateString()}</td>
-  <td>${s.MonthlyFee}</td>
-  <td>${s.FeeStatus}</td>
-</tr>
-`).join("");
 
-  const html = `
-  <html>
-  <head>
-  <style>
-  body{
-  font-family: Arial;
-  }
+const generateClassPDFBuffer = (cls, studentsInClass) => {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ size: "A4", layout: "landscape", margin: 0 });
+    const chunks = [];
 
-  table{
-  width:100%;
-  border-collapse: collapse;
-  }
+    doc.on("data",  (chunk) => chunks.push(chunk));
+    doc.on("end",   () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
 
-  th,td{
-  border:1px solid black;
-  padding:8px;
-  text-align:center;
-  }
+    const PAGE_W = doc.page.width;   // 841.89
+    const PAGE_H = doc.page.height;  // 595.28
+    const M      = 30;
+    const TW     = PAGE_W - M * 2;
 
-  th{
-  background:#eee;
-  }
+    const ROW_H      = 30;   // ⬆ bara
+    const HEADER_H   = 44;   // ⬆ bara
+    const COL_HEAD_H = 26;   // ⬆ bara
 
-  h2{
-  text-align:center;
-  }
-  </style>
-  </head>
+    const COLS = [
+      { label: "GR #",         w: TW * 0.07  },
+      { label: "Student Name", w: TW * 0.19  },
+      { label: "Father Name",  w: TW * 0.18  },
+      { label: "Gender",       w: TW * 0.07  },
+      { label: "DOB",          w: TW * 0.12  },
+      { label: "Admission",    w: TW * 0.12  },
+      { label: "Monthly Fee",  w: TW * 0.12  },
+      { label: "Status",       w: TW * 0.13  },
+    ];
 
-  <body>
+    const ROWS_PER_PAGE = Math.floor(
+      (PAGE_H - M * 2 - HEADER_H - COL_HEAD_H - 20) / ROW_H
+    );
 
-  <h2>Student List</h2>
+    const fmt = (d) => {
+      try {
+        return new Date(d).toLocaleDateString("en-PK", {
+          day: "2-digit", month: "short", year: "numeric",
+        });
+      } catch { return "N/A"; }
+    };
 
-  <table>
+    const today = new Date().toLocaleDateString("en-PK", {
+      day: "2-digit", month: "long", year: "numeric",
+    });
 
-  <thead>
-  <tr>
-  <th>GR#</th>
-  <th>Student</th>
-  <th>Father</th>
-  <th>Class</th>
-  <th>Gender</th>
-  <th>DOB</th>
-  <th>Admission</th>
-  <th>Fee</th>
-  <th>Fee Status</th>
-  </tr>
-  </thead>
+    const colX = (idx) => {
+      let x = M;
+      for (let i = 0; i < idx; i++) x += COLS[i].w;
+      return x;
+    };
 
-  <tbody>
-  ${rows}
-  </tbody>
+    const clip = (text, maxW) => {
+      let t = String(text ?? "");
+      while (t.length > 1 && doc.widthOfString(t) > maxW - 10) t = t.slice(0, -1);
+      return t.length < String(text ?? "").length ? t + "…" : t;
+    };
 
-  </table>
+    const drawHeader = () => {
+      doc.rect(M, M, TW, HEADER_H).fillColor("#1e293b").fill();
 
-  </body>
-  </html>
-  `;
+      doc.fillColor("#f1f5f9").font("Helvetica-Bold").fontSize(15)
+        .text(`Student Register — Class ${cls}`, M + 16, M + 10, { lineBreak: false });
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+      doc.fillColor("#64748b").font("Helvetica").fontSize(9.5)
+        .text(
+          `${studentsInClass.length} students  ·  Generated: ${today}  ·  Confidential`,
+          M + 16, M + 28, { lineBreak: false }
+        );
+    };
 
-  await page.setContent(html);
+    const drawColHeaders = (y) => {
+      doc.rect(M, y, TW, COL_HEAD_H).fillColor("#f1f5f9").fill();
 
-  const pdf = await page.pdf({ format: "A4" });
+      doc.moveTo(M, y).lineTo(M + TW, y)
+        .lineWidth(0.5).strokeColor("#cbd5e1").stroke();
+      doc.moveTo(M, y + COL_HEAD_H).lineTo(M + TW, y + COL_HEAD_H)
+        .lineWidth(0.5).strokeColor("#cbd5e1").stroke();
 
-  await browser.close();
+      doc.fillColor("#475569").font("Helvetica-Bold").fontSize(9.5);
+      COLS.forEach((col, i) => {
+        doc.text(col.label.toUpperCase(), colX(i) + 8, y + 8, { lineBreak: false });
+      });
+    };
 
-  res.set({
-    "Content-Type": "application/pdf",
-    "Content-Disposition": "attachment; filename=students.pdf",
+    const drawFooter = (pageNum, totalPages) => {
+      const fy = PAGE_H - M - 14;
+      doc.moveTo(M, fy).lineTo(M + TW, fy)
+        .lineWidth(0.3).strokeColor("#e2e8f0").stroke();
+      doc.fillColor("#94a3b8").font("Helvetica").fontSize(8)
+        .text(`School Management System  ·  Class ${cls} Register  ·  ${today}`, M, fy + 4, { lineBreak: false });
+      doc.text(`Page ${pageNum} / ${totalPages}`, M + TW - 60, fy + 4, { lineBreak: false });
+    };
+
+    const drawVerticalDividers = (fromY, toY) => {
+      let lx = M;
+      COLS.forEach((col) => {
+        lx += col.w;
+        doc.moveTo(lx, fromY).lineTo(lx, toY)
+          .lineWidth(0.3).strokeColor("#e2e8f0").stroke();
+      });
+    };
+
+    const totalPages = Math.max(1, Math.ceil(studentsInClass.length / ROWS_PER_PAGE));
+
+    for (let p = 0; p < totalPages; p++) {
+      if (p > 0) doc.addPage();
+
+      const chunk    = studentsInClass.slice(p * ROWS_PER_PAGE, (p + 1) * ROWS_PER_PAGE);
+      const colHeadY = M + HEADER_H + 2;
+      let   rowY     = colHeadY + COL_HEAD_H;
+
+      drawHeader();
+      drawColHeaders(colHeadY);
+
+      chunk.forEach((s, i) => {
+        doc.rect(M, rowY, TW, ROW_H)
+          .fillColor(i % 2 === 0 ? "#ffffff" : "#f8fafc")
+          .fill();
+
+        const values = [
+          `GR-${String(s.GrNumber).padStart(3, "0")}`,
+          s.StudentName,
+          s.FatherName,
+          s.Gender,
+          fmt(s.DateOfBirth),
+          fmt(s.DateOfAdmission),
+          `Rs. ${Number(s.MonthlyFee).toLocaleString()}`,
+          s.feeStatus ?? "Pending",
+        ];
+
+        values.forEach((val, ci) => {
+          const cx  = colX(ci);
+          const cw  = COLS[ci].w;
+          const cy  = rowY + ROW_H / 2 - 5;
+
+          if (ci === 7) {
+            // ── Status — sirf colored text, koi badge nahi ──
+            const status = String(val);
+            const colorMap = {
+              Paid:    "#16a34a",  // green
+              Unpaid:  "#dc2626",  // red
+              Pending: "#d97706",  // amber
+            };
+            const color = colorMap[status] ?? "#64748b";
+            doc.fillColor(color).font("Helvetica-Bold").fontSize(10)
+              .text(status, cx + 8, cy, { lineBreak: false });
+          } else {
+            const isBold = ci === 0 || ci === 6;
+            doc.fillColor("#1e293b")
+              .font(isBold ? "Helvetica-Bold" : "Helvetica")
+              .fontSize(10)
+              .text(clip(val, cw), cx + 8, cy, { lineBreak: false });
+          }
+        });
+
+        doc.moveTo(M, rowY + ROW_H).lineTo(M + TW, rowY + ROW_H)
+          .lineWidth(0.3).strokeColor("#e2e8f0").stroke();
+
+        rowY += ROW_H;
+      });
+
+      drawVerticalDividers(colHeadY, rowY);
+
+      doc.rect(M, colHeadY, TW, rowY - colHeadY)
+        .lineWidth(0.5).strokeColor("#cbd5e1").stroke();
+
+      drawFooter(p + 1, totalPages);
+    }
+
+    doc.end();
   });
-
-  res.send(pdf);
 };
 
+const generateStudentsPDF = async (req, res) => {
+  try {
+    const students = await Student.find().sort({ Class: 1, GrNumber: 1 });
+    if (!students.length)
+      return res.status(404).json({ message: "No students found" });
 
+    const grouped = {};
+    students.forEach((s) => {
+      if (!grouped[s.Class]) grouped[s.Class] = [];
+      grouped[s.Class].push(s);
+    });
+
+    res.setHeader("Content-Type", "application/zip");
+    res.setHeader("Content-Disposition", `attachment; filename="StudentRegister_${new Date().getFullYear()}.zip"`);
+
+    const archive = archiver("zip", { zlib: { level: 9 } });
+
+    archive.on("error", (err) => {
+      console.error("Archiver error:", err);
+      res.status(500).json({ message: "Failed to create ZIP" });
+    });
+
+    archive.pipe(res);
+
+    for (const cls of Object.keys(grouped)) {
+      const pdfBuffer = await generateClassPDFBuffer(cls, grouped[cls]);
+      archive.append(pdfBuffer, { name: `Class_${cls}/students-class${cls}.pdf` });
+    }
+
+    await archive.finalize();
+
+  } catch (err) {
+    console.error("generateStudentsPDF error:", err);
+    res.status(500).json({ message: "Failed to generate ZIP" });
+  }
+};
 
 
 
@@ -265,5 +384,5 @@ module.exports = {
     deleteStudent,
     EditStudent,
     getStudent,
-    generateStudentPDF
+generateStudentsPDF
 }

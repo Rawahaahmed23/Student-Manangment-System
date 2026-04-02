@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Grid3x3, Users, Calendar, Menu } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { FaUserPlus } from "react-icons/fa6";
+import { MdOutlinePayment } from "react-icons/md";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,7 +12,7 @@ const Sidebar = () => {
     { icon: <Users size={20} />, label: "Student Data", path: "/StudentDetails" },
     { icon: <FaUserPlus size={20} />, label: "Add Student", path: "/addstudent" },
     { icon: <Calendar size={20} />, label: "Fees Tracker", path: "/feestracker" },
-    { icon: <Calendar size={20} />, label: "Fees Voucher", path: "/feesvoucher" },
+    { icon: <MdOutlinePayment  size={20} />, label: "Fees Voucher", path: "/feesvocher" },
   ];
 
   return (

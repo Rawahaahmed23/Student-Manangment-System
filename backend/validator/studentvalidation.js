@@ -20,11 +20,11 @@ const studentValidationSchema = yup.object({
     .required("Father Name is required"),
 
   Class: yup
-    .number()
+    .string()
     .typeError("Class must be a number")
-    .required("Class is required")
-    .positive()
-    .integer(),
+    .required("Class is required"),
+  
+    
 
   Gender: yup
     .string()

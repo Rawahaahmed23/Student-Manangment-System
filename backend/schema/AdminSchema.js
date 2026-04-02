@@ -67,5 +67,5 @@ AdminSchema.methods.generateToken=async function() {
     }
 }
 
-const Admin = mongoose.model("dmin", AdminSchema);
+const Admin = mongoose.model("admin", AdminSchema);
 module.exports = Admin;

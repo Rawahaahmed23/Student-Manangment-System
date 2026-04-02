@@ -1,14 +1,37 @@
 import { createContext, useContext, useEffect, useState } from "react";
-
+import { UserContext } from "./useAuth"
 export const StudentContext = createContext();
 
 export const StudentProvider = ({ children }) => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { isLogin, loading: authLoading } = useContext(UserContext);
 
 
+const deleteFeeRecord = async (id, year) => {
+  try {
+    const res = await fetch(`http://localhost:5000/fee/delete/${id}/record`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ year }),
+    });
 
+    const data = await res.json();
 
+    if (!res.ok) {
+      return { success: false, message: data.message };
+    }
+
+    await getStudents(); // refresh data
+    return { success: true };
+
+  } catch (err) {
+    console.error(err);
+    return { success: false, message: "Something went wrong" };
+  }
+};
 
   
   const getStudents = async () => {
@@ -16,6 +39,7 @@ export const StudentProvider = ({ children }) => {
     try {
       const res = await fetch("http://localhost:5000/Student/getStudent", {
         method: "GET",
+         credentials: "include"
       });
       const result = await res.json();
       setStudents(result.data ?? []);
@@ -120,12 +144,10 @@ const markUnpaid = async (id, months, year) => {
     }
   };
 
-  useEffect(() => {
-    getStudents();
-  }, []);
+
 
   return (
-    <StudentContext.Provider value={{ students, getStudents, editStudent, deleteStudent, loading, markPaid,markUnpaid, }}>
+    <StudentContext.Provider value={{ students, getStudents, editStudent, deleteStudent, loading, markPaid,markUnpaid, deleteFeeRecord }}>
       {children}
     </StudentContext.Provider>
   );

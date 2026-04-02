@@ -40,17 +40,20 @@ const Header = () => {
   const colors = stringToColor(user.username);
 
   return (
-    <nav className="bg-white border-b border-slate-100 w-full h-16 flex items-center justify-between px-4 sm:px-8 shadow-sm">
+   <nav className="bg-white border-b border-slate-100 fixed top-0 left-0 lg:left-16 right-0 h-16 flex items-center justify-between px-6 shadow-sm z-10">
 
-      {/* Logo */}
-      <div className="flex items-center gap-2.5">
-        <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center shadow-sm">
-          <span className="text-yellow-900 font-bold text-xs">L</span>
-        </div>
-        <span className="text-sm font-semibold text-slate-700">Logo</span>
-      </div>
+   
+<div className="flex items-center gap-1">
+  <img
+    src="/LOGO.png"
+    alt="Logo"
+    style={{ width: '72px', height: '72px' }}
+    className="object-contain"
+  />
+  <span className="text-sm font-semibold text-slate-700">Iqra Tarbiyat Ul Atfal</span>
+</div>
 
-      {/* Profile Dropdown */}
+      {/* ── User dropdown ── */}
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setOpen(!open)}
@@ -67,7 +70,7 @@ const Header = () => {
             {user.username[0].toUpperCase()}
           </div>
 
-          <span className="hidden sm:block text-sm font-medium text-slate-700 max-w-[120px] truncate">
+          <span className="text-sm font-medium text-slate-700 max-w-[120px] truncate">
             {user.username}
           </span>
 
@@ -79,8 +82,6 @@ const Header = () => {
 
         {open && (
           <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-slate-100 rounded-2xl shadow-lg shadow-slate-100/60 py-2 z-50 overflow-hidden">
-
-            {/* User info header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-50">
               <div
                 className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
@@ -94,7 +95,6 @@ const Header = () => {
               </div>
             </div>
 
-            {/* Logout */}
             <button
               onClick={handleLogout}
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"

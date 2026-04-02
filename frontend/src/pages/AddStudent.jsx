@@ -4,10 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Upload, User, X, Loader2 } from "lucide-react";
-import { toast} from "react-toastify";
+import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
+import { useStudent } from "@/Store/StudentData";
 import "react-toastify/dist/ReactToastify.css";
-
 
 const FullPageLoader = () => (
   <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
@@ -16,8 +16,8 @@ const FullPageLoader = () => (
   </div>
 );
 
-
 const StudentRegistrationForm = () => {
+  const { getStudents } = useStudent();
   const [formData, setFormData] = useState({
     GrNumber: "",
     StudentName: "",
@@ -27,25 +27,12 @@ const StudentRegistrationForm = () => {
     DateOfBirth: "",
     DateOfAdmission: "",
     MonthlyFee: "",
-    FeeStatus: "",
-    LastFeeUpdate: "",
-    profileImage: null,
   });
 
   const [loading, setLoading] = useState(false);
 
-  const updateField = (field, value) => {
+  const updateField = (field, value) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) updateField("profileImage", file);
-  };
-
-  const removeImage = () => {
-    updateField("profileImage", null);
-  };
 
   const handleReset = () => {
     setFormData({
@@ -57,58 +44,29 @@ const StudentRegistrationForm = () => {
       DateOfBirth: "",
       DateOfAdmission: "",
       MonthlyFee: "",
-      FeeStatus: "",
-      LastFeeUpdate: "",
-      profileImage: null,
     });
   };
 
   const handleSubmit = async () => {
- 
-    if (!formData.GrNumber || !formData.StudentName) {
-      toast.error("GrNumber aur StudentName Are required.");
-      return;
-    }
-
     setLoading(true);
     try {
-    
-      const fd = new FormData();
-
-      fd.append("GrNumber", formData.GrNumber);
-      fd.append("StudentName", formData.StudentName);
-      fd.append("FatherName", formData.FatherName);
-      fd.append("Class", formData.Class);
-      fd.append("Gender", formData.Gender);
-      fd.append("DateOfBirth", formData.DateOfBirth);
-      fd.append("DateOfAdmission", formData.DateOfAdmission);
-      fd.append("MonthlyFee", formData.MonthlyFee);
-      fd.append("FeeStatus", formData.FeeStatus);
-      fd.append("LastFeeUpdate", formData.LastFeeUpdate);
-
-      
-      if (formData.profileImage) {
-        fd.append("profileImage", formData.profileImage);
-      }
-
-
       const response = await fetch("http://localhost:5000/Student/add_Student", {
         method: "POST",
-     
-        body: fd,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        toast.success(data.message || data.extraDetails);
+        toast.success(data?.message || "Student added successfully!");
+        await getStudents();
         handleReset();
       } else {
-        const errMsg = [data?.message, data?.extraDetails].filter(Boolean).join(" — ");
-        throw new Error(errMsg || "Server error. Dobara try karein.");
+        toast.error(data?.extraDetails || data?.message || "Something went wrong.");
       }
     } catch (error) {
-      toast.error(error.message || "Kuch masla aaya. Dobara try karein.");
+      toast.error("Unable to connect to the server.");
     } finally {
       setLoading(false);
     }
@@ -116,15 +74,9 @@ const StudentRegistrationForm = () => {
 
   return (
     <>
-
-     
-
-   
       {loading && <FullPageLoader />}
-
-      <div className="min-h-screen  to-indigo-50 p-3 sm:p-6 lg:p-8">
-        <div className="max-w-4xl mx-auto">
-    
+      <div className="min-h-screen p-3 sm:p-6 lg:p-8 mt-20">
+        <div className="max-w-3xl mx-auto">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-4 sm:mb-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
@@ -132,30 +84,14 @@ const StudentRegistrationForm = () => {
                 <p className="text-sm text-gray-500">Fill in the student information below</p>
               </div>
               <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
-                <Button variant="outline" className="flex-1 sm:flex-none border-gray-300 hover:bg-gray-50">
-                  Cancel
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleReset}
-                  disabled={loading}
-                  className="flex-1 sm:flex-none border-gray-300 hover:bg-gray-50"
-                >
-                  Reset
-                </Button>
-                <Button
-                  className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                >
+                <Button variant="outline" className="flex-1 sm:flex-none border-gray-300 hover:bg-gray-50">Cancel</Button>
+                <Button variant="outline" onClick={handleReset} disabled={loading} className="flex-1 sm:flex-none border-gray-300 hover:bg-gray-50">Reset</Button>
+                <Button className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60" onClick={handleSubmit} disabled={loading}>
                   {loading ? (
                     <span className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Saving...
+                      <Loader2 className="w-4 h-4 animate-spin" /> Saving...
                     </span>
-                  ) : (
-                    "Save"
-                  )}
+                  ) : "Save"}
                 </Button>
               </div>
             </div>
@@ -163,139 +99,73 @@ const StudentRegistrationForm = () => {
 
           <Card className="border-gray-200 shadow-sm bg-white">
             <CardHeader className="pb-4">
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-6">
-                <CardTitle className="text-lg font-semibold text-gray-900">Add Information</CardTitle>
-              </div>
+              <CardTitle className="text-lg font-semibold text-gray-900">Student Information</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              
-                <div className="lg:col-span-4">
-                  <div className="flex flex-col items-center">
-                    <div className="relative">
-                      <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-gray-100 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
-                        {formData.profileImage ? (
-                          <img
-                            src={URL.createObjectURL(formData.profileImage)}
-                            alt="Profile"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <User className="w-16 h-16 sm:w-20 sm:h-20 text-gray-300" />
-                        )}
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-1.5 block">G.R No <span className="text-red-500">*</span></Label>
+                    <Input placeholder="Enter G.R Number" value={formData.GrNumber} onChange={(e) => updateField("GrNumber", e.target.value)} />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Student Name <span className="text-red-500">*</span></Label>
+                    <Input placeholder="Enter Student Name" value={formData.StudentName} onChange={(e) => updateField("StudentName", e.target.value)} />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Father Name <span className="text-red-500">*</span></Label>
+                    <Input placeholder="Enter Father Name" value={formData.FatherName} onChange={(e) => updateField("FatherName", e.target.value)} />
+                  </div>
+                <div>
+  <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Class <span className="text-red-500">*</span></Label>
+  <select
+    value={formData.Class}
+    onChange={(e) => updateField("Class", e.target.value)}
+    className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="">Select Class</option>
+    <option value="Reception">Reception</option>
+    <option value="Junior">Junior</option>
+    <option value="Senior">Senior</option>
+    {[1,2,3,4,5,6,7,8].map(n => (
+      <option key={n} value={`Class ${n}`}>Class {n}</option>
+    ))}
+    <option value="Hifz">Hifz</option>
+    <option value="Nazra">Nazra</option>
+  </select>
+</div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Gender</Label>
+                  <RadioGroup value={formData.Gender} onValueChange={(val) => updateField("Gender", val)}>
+                    <div className="flex gap-6">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Male" id="male" />
+                        <label htmlFor="male" className="text-sm font-medium cursor-pointer">Male</label>
                       </div>
-                      {formData.profileImage && (
-                        <button
-                          onClick={removeImage}
-                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1.5 shadow-lg hover:bg-red-600 transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Female" id="female" />
+                        <label htmlFor="female" className="text-sm font-medium cursor-pointer">Female</label>
+                      </div>
                     </div>
-                    <label className="mt-4 sm:mt-6 cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleImageChange}
-                      />
-                      <div className="px-4 py-2 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all text-sm font-medium text-gray-700 flex items-center gap-2">
-                        <Upload className="w-4 h-4" />
-                        Upload Photo
-                      </div>
-                    </label>
-                    <p className="text-xs text-gray-500 mt-2">JPG, PNG or GIF (max. 2MB)</p>
+                  </RadioGroup>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Date of Birth <span className="text-red-500">*</span></Label>
+                    <Input type="date" value={formData.DateOfBirth} onChange={(e) => updateField("DateOfBirth", e.target.value)} />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Date of Admission <span className="text-red-500">*</span></Label>
+                    <Input type="date" value={formData.DateOfAdmission} onChange={(e) => updateField("DateOfAdmission", e.target.value)} />
                   </div>
                 </div>
 
-                <div className="lg:col-span-8">
-                  <div className="space-y-5">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700 mb-1.5 block">G.R No</Label>
-                        <Input
-                          placeholder="Enter G.R Number"
-                          value={formData.GrNumber}
-                          onChange={(e) => updateField("GrNumber", e.target.value)}
-                        />
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Student Name</Label>
-                        <Input
-                          placeholder="Enter Student Name"
-                          value={formData.StudentName}
-                          onChange={(e) => updateField("StudentName", e.target.value)}
-                        />
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Father Name</Label>
-                        <Input
-                          placeholder="Enter Father Name"
-                          value={formData.FatherName}
-                          onChange={(e) => updateField("FatherName", e.target.value)}
-                        />
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Class</Label>
-                        <Input
-                          placeholder="Enter Class"
-                          value={formData.Class}
-                          onChange={(e) => updateField("Class", e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700 mb-2 block">Gender</Label>
-                      <RadioGroup
-                        value={formData.Gender}
-                        onValueChange={(val) => updateField("Gender", val)}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="Male" id="male" />
-                          <label htmlFor="male" className="text-sm font-medium cursor-pointer">Male</label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="Female" id="female" />
-                          <label htmlFor="female" className="text-sm font-medium cursor-pointer">Female</label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Date of Birth</Label>
-                        <Input
-                          type="date"
-                          value={formData.DateOfBirth}
-                          onChange={(e) => updateField("DateOfBirth", e.target.value)}
-                        />
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Date of Admission</Label>
-                        <Input
-                          type="date"
-                          value={formData.DateOfAdmission}
-                          onChange={(e) => updateField("DateOfAdmission", e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Monthly Fee</Label>
-                      <Input
-                        type="number"
-                        placeholder="Enter Monthly Fee"
-                        value={formData.MonthlyFee}
-                        onChange={(e) => updateField("MonthlyFee", e.target.value)}
-                      />
-                    </div>
-                  </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Monthly Fee <span className="text-red-500">*</span></Label>
+                  <Input type="number" placeholder="Enter Monthly Fee" value={formData.MonthlyFee} onChange={(e) => updateField("MonthlyFee", e.target.value)} />
                 </div>
               </div>
             </CardContent>

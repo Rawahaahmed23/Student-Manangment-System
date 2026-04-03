@@ -111,67 +111,29 @@ const sendOtp = async(req,res)=>{
      const {email} = req.body
      const userid = await Admin.findOne({email})
      if(!userid){
-        return res.status(400).json({message:"User does not exsist"})
+        return res.status(400).json({message:"User does not exist"})
      }
- 
 
-const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    userid.resetOtp = otp;
+    userid.resetOtpExpire = Date.now() + 10 * 60 * 1000; 
+    await userid.save();
 
-userid.resetOtp = otp;
-userid.resetOtpExpire = Date.now() + 10 * 60 * 1000; 
-await userid.save();
+    await transporter.sendMail({
+      from: process.env.Sender_Email,
+      to: email,
+      subject: "Password Reset OTP",
+      html: `...`
+    });
 
- await transporter.sendMail({
-  from: process.env.Sender_Email,
-  to: email,
-  subject: "Password Reset OTP",
- 
-  html: `
-    <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-      <div style="max-width: 500px; margin: auto; background: #ffffff; padding: 30px; border-radius: 8px;">
-        
-        <h2 style="color: #333; text-align: center;">
-          Password Reset Request
-        </h2>
+    res.status(200).json({message:"OTP sent successfully"})
 
-        <p style="font-size: 16px; color: #555;">
-          We received a request to reset your password.
-        </p>
-
-        <div style="text-align: center; margin: 30px 0;">
-          <span style="
-            display: inline-block;
-            background: #4CAF50;
-            color: white;
-            padding: 12px 25px;
-            font-size: 22px;
-            letter-spacing: 4px;
-            border-radius: 6px;
-          ">
-            ${otp}
-          </span>
-        </div>
-
-        <p style="font-size: 14px; color: #777;">
-          This OTP is valid for 10 minutes.
-        </p>
-
-        <p style="font-size: 14px; color: #777;">
-          If you didn’t request this, please ignore this email.
-        </p>
-
-      </div>
-    </div>
-  `
-});
-
-res.status(200).json({message:"otp send sucessfuly"})
-}catch(error){
-    res.status(500).json({message:"OTP send failed"});
-    
+   }catch(error){
+    // YE CHANGE KARO
+    console.log("❌ SendOtp Error:", error.message);
+    res.status(500).json({message:"OTP send failed", error: error.message}); // error.message add karo
    }
 }
-
 
 
 const verifyOtp = async (req, res) => {

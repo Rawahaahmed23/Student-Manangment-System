@@ -6,7 +6,7 @@ const validator = require('../middleware/Validator')
 const {signupSchema,loginSchema} = require('../validator/validation')
 
 
-Route.route('/Signup').post(validator(signupSchema), auhtController.Singup);
+Route.route('/signup').post(validator(signupSchema), auhtController.Singup);
 Route.route('/auth').get(authmiddleware,auhtController.user)
 Route.route('/Login').post(validator(loginSchema),auhtController.Login)
 Route.route('/Logout').post(auhtController.Logout)

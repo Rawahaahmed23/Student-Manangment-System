@@ -30,7 +30,7 @@ const handleSubmit = async (e) => {
   setloading(true);
 
   try {
-    const response = await fetch('https://student-manangment-system.onrender.com/Signup', {
+    const response = await fetch('https://student-manangment-system.onrender.com/signup', {
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)

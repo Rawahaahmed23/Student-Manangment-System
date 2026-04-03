@@ -15,41 +15,45 @@ const Navigate = useNavigate()
 const [error, setError] = useState("");
   
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-const formData = {
-  username: usernameRef.current.value,
-  email: emailRef.current.value,
-  password: passwordRef.current.value
-};
- setloading(true);
-    try{
-     const response = await fetch('https://student-manangment-system.onrender.com/Signup',{
-       method : "POST",
-  headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify(formData) 
-   
-     })
-     const data = await response.json()
-    if (response.ok) {
-  setloading(false);
-  Navigate('/');
-  toast.success("Registration successful!");
-} else {
-  toast.error(data.message || data.extraDetails);
-  setloading(false);
-  return;
-}
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    }catch(error){
-       console.log(error);
-       
-        
-    }finally{
-      setloading(false)
-    }
- 
+
+  if (loading) return;
+
+  const formData = {
+    username: usernameRef.current.value,
+    email: emailRef.current.value,
+    password: passwordRef.current.value
   };
+
+  setloading(true);
+
+  try {
+    const response = await fetch('https://student-manangment-system.onrender.com/Signup', {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      toast.success("Registration successful!");
+      Navigate('/');
+    } else {
+      toast.error(data.message || data.extraDetails);
+    }
+
+  } catch (error) {
+    // ✅ Fix 1: catch mein bhi error dikhao
+    console.log(error);
+    toast.error("Network error. Please try again.");
+
+  } finally {
+    setloading(false); // yeh already theek hai
+  }
+};
 
   return (
     <div className="flex min-h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">

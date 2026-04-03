@@ -25,10 +25,10 @@ const formData = {
  setloading(true);
     try{
      const response = await fetch('https://student-manangment-system.onrender.com/Signup',{
-      method : "Post",
-      credentials:'include',
-      headers: {'Content-Type': 'application/json'},
-       body: JSON.stringify(formData) 
+       method : "POST",
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify(formData) 
+   
      })
      const data = await response.json()
     if (response.ok) {

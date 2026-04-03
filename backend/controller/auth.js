@@ -3,7 +3,7 @@ const Admin = require('../schema/AdminSchema')
 const transporter = require('../nodemailer/nodemailer')
 
 
-//  Singup 
+
 const Singup = async(req,res)=>{
  try{
    const{username,email,password} = req.body
@@ -125,7 +125,7 @@ await userid.save();
   from: process.env.Sender_Email,
   to: email,
   subject: "Password Reset OTP",
-   connectionTimeout: 10000,  // 10 seconds
+   connectionTimeout: 10000,  
     greetingTimeout: 10000,
     socketTimeout: 15000,
   html: `
@@ -175,7 +175,7 @@ res.status(200).json({message:"otp send sucessfuly"})
 }
 
 
-// Verify OTP
+
 const verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
 
@@ -206,7 +206,6 @@ const verifyOtp = async (req, res) => {
 };
 
 
-// Forgot passowrd 
 const ResetPassword = async(req, res) => {
   const { email, otp, newpassword } = req.body;
 
@@ -228,7 +227,7 @@ const ResetPassword = async(req, res) => {
       return res.status(400).json({ message: "OTP expired" });
     }
 
-    // ✅ Plain text do — hook khud hash karega
+
     user.password = newpassword;
     user.resetOtp = '';
     user.resetOtpExpire = 0;

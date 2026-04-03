@@ -30,17 +30,19 @@ const formData = {
       headers: {'Content-Type': 'application/json'},
        body: JSON.stringify(formData) 
      })
-
      const data = await response.json()
-     setloading(false)
-     Navigate('/')
+     if(response.ok){
+       setloading(false)
+       Navigate('/')
+       toast.success("Registration successful!");
+
+     }
  if(!response.ok){
     toast.error(data.message || data.extraDetails); 
     setloading(false);
     return; 
 }
-toast.success("Registration successful!");
-Navigate('/');
+
     }catch(error){
        console.log(error);
        

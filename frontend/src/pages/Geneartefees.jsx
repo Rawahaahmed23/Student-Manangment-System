@@ -5,7 +5,7 @@ import { SearchFilter } from "../components/SearchFilter";
 import { useStudent } from "@/Store/StudentData";
 
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://student-manangment-system.onrender.com";
 const ITEMS_PER_PAGE = 8;
 
 

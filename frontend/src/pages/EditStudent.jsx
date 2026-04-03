@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Upload, User, X, Loader2, ArrowLeft, GraduationCap } from "lucide-react";
+import { Loader2, ArrowLeft, GraduationCap } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import { useStudent } from "@/Store/StudentData";
 import { useNavigate, useParams } from "react-router-dom";
@@ -34,8 +34,6 @@ const EditStudent = () => {
     MonthlyFee: "",
     FeeStatus: "",
     LastFeeUpdate: "",
-    profileImage: null,
-    imageUrl: "",
   });
 
   useEffect(() => {
@@ -56,8 +54,6 @@ const EditStudent = () => {
           MonthlyFee: student.MonthlyFee || "",
           FeeStatus: student.FeeStatus || "",
           LastFeeUpdate: student.LastFeeUpdate || "",
-          profileImage: null,
-          imageUrl: student.profileImage?.url || "",
         });
       }
     }
@@ -65,16 +61,6 @@ const EditStudent = () => {
 
   const updateField = (field, value) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) updateField("profileImage", file);
-  };
-
-  const removeImage = () => {
-    updateField("profileImage", null);
-    updateField("imageUrl", "");
-  };
 
   const handleSubmit = async () => {
     if (!formData.GrNumber || !formData.StudentName) {
@@ -85,42 +71,20 @@ const EditStudent = () => {
     setLoading(true);
 
     try {
-      const existingStudent = Array.isArray(students)
-        ? students.find((s) => s._id === id)
-        : students;
-
-      let imageUrl = formData.imageUrl;
-      let publicId = existingStudent?.profileImage?.public_id;
-
-      if (formData.profileImage) {
-        const fd = new FormData();
-        fd.append("file", formData.profileImage);
-        fd.append("upload_preset", "rawaha");
-        fd.append("cloud_name", "dtx7n84vi");
-        fd.append("folder", "students");
-
-        const imgRes = await fetch(
-          "https://api.cloudinary.com/v1_1/dtx7n84vi/image/upload",
-          { method: "POST", body: fd }
-        );
-        const imgData = await imgRes.json();
-        imageUrl = imgData.secure_url;
-        publicId = imgData.public_id;
-      }
-
-      const response = await fetch(`http://localhost:5000/Student/edit/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          profileImage: { url: imageUrl, public_id: publicId },
-        }),
-      });
+      const response = await fetch(
+        `https://student-manangment-system.onrender.com/Student/edit/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         toast.success("Student Updated Successfully");
+         setTimeout(() => window.location.reload(), 100);
         setTimeout(() => navigate("/addstudent"), 1500);
       } else {
         throw new Error(data.message);
@@ -132,17 +96,12 @@ const EditStudent = () => {
     }
   };
 
-  const previewSrc = formData.profileImage
-    ? URL.createObjectURL(formData.profileImage)
-    : formData.imageUrl || null;
-
   return (
     <>
       <ToastContainer position="top-right" autoClose={2000} />
       {loading && <FullPageLoader />}
 
       <div className="min-h-screen bg-slate-50">
-
         {/* ── Top Bar ── */}
         <div className="bg-white border-b border-slate-100 px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-3">
           <button
@@ -164,57 +123,6 @@ const EditStudent = () => {
 
         {/* ── Body ── */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-4">
-
-          {/* ── Profile Image Card ── */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">
-              Profile Photo
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-              {/* Avatar */}
-              <div className="relative shrink-0">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center">
-                  {previewSrc ? (
-                    <img src={previewSrc} className="w-full h-full object-cover" alt="preview" />
-                  ) : (
-                    <User className="w-10 h-10 text-slate-300" />
-                  )}
-                </div>
-                {previewSrc && (
-                  <button
-                    onClick={removeImage}
-                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-sm transition-colors"
-                  >
-                    <X size={12} />
-                  </button>
-                )}
-              </div>
-
-              {/* Upload */}
-              <div className="flex flex-col items-center sm:items-start gap-2 text-center sm:text-left">
-                <p className="text-sm font-medium text-slate-700">
-                  {formData.StudentName || "Student Name"}
-                </p>
-                <p className="text-xs text-slate-400">
-                  JPG, PNG up to 5MB
-                </p>
-                <label className="cursor-pointer mt-1">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
-                  <div className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-medium transition-colors">
-                    <Upload size={13} />
-                    Upload Photo
-                  </div>
-                </label>
-              </div>
-            </div>
-          </div>
-
           {/* ── Form Card ── */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-5">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -333,7 +241,6 @@ const EditStudent = () => {
               "Update Student"
             )}
           </Button>
-
         </div>
       </div>
     </>

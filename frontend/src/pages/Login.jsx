@@ -27,7 +27,7 @@ export default function LoginForm() {
     const password = passwordRef.current.value;
 
     try {
-      const response = await fetch('http://localhost:5000/Login', {
+      const response = await fetch('https://student-manangment-system.onrender.com/Login', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"

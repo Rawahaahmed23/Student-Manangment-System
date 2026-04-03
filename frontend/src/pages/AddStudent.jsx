@@ -50,7 +50,7 @@ const StudentRegistrationForm = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/Student/add_Student", {
+      const response = await fetch("https://student-manangment-system.onrender.com/Student/add_Student", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

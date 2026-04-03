@@ -24,7 +24,7 @@ const formData = {
 };
  setloading(true);
     try{
-     const response = await fetch('http://localhost:5000/Signup',{
+     const response = await fetch('https://student-manangment-system.onrender.com/Signup',{
       method : "Post",
       credentials:'include',
       headers: {'Content-Type': 'application/json'},

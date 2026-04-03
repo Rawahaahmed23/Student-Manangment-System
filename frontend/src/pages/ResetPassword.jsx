@@ -68,7 +68,7 @@ export default function VerifyOTP() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/verify-otp', {
+      const response = await fetch('https://student-manangment-system.onrender.com/verify-otp', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp: otpCode }),
@@ -115,7 +115,7 @@ export default function VerifyOTP() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/resetPassword', {
+      const response = await fetch('https://student-manangment-system.onrender.com/resetPassword', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp: verifiedOtp.current, newpassword: newPassword }),

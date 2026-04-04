@@ -27,8 +27,8 @@ const generateVoucherBuffer = (student) => {
     try {
       const fs = require("fs");
       if (fs.existsSync(LOGO_PATH)) {
-        doc.image(LOGO_PATH, 30, -3, {
-          fit: [80, 80],
+        doc.image(LOGO_PATH, 40, 20, {
+          fit: [40, 40],
           align: "left",
           valign: "center",
         });

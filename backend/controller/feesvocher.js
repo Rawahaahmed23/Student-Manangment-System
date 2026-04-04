@@ -151,10 +151,10 @@ const generateVoucherBuffer = (student) => {
       .fill();
 
     doc
-      .fillColor("#94a3b8")
-      .fontSize(9)
+    .fillColor("#ffffff")
+      .fontSize(12)
       .font("Helvetica")
-      .text("TOTAL AMOUNT DUE", 48, 314);
+      .text("TOTAL AMOUNT DUE", 48, 319);
 
     doc
       .fillColor("#f1f5f9")
@@ -163,7 +163,7 @@ const generateVoucherBuffer = (student) => {
       .text(
         `Rs. ${Number(student.MonthlyFee).toLocaleString()}`,
         doc.page.width - 180,
-        311
+        317
       );
 
     doc

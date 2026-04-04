@@ -43,16 +43,21 @@ const Header = () => {
    <nav className="bg-white border-b border-slate-100 fixed top-0 left-0 lg:left-16 right-0 h-16 flex items-center justify-between px-6 shadow-sm z-10">
 
    
-<div className="flex items-center gap-1">
+<div className="flex items-center gap-2">
   <img
     src="/LOGO.png"
     alt="Logo"
-    style={{ width: '72px', height: '72px' }}
-    className="object-contain"
+    className="object-contain w-16 h-16 sm:w-10 sm:h-10 shrink-0"
   />
-  <span className="text-sm font-semibold text-slate-700">Iqra Taleem o Tabiat ul Atfal</span>
+  <div className="flex flex-col leading-tight">
+    <span className="text-xs sm:text-sm font-bold text-slate-800 leading-tight">
+      Iqra Taleem o Tarbiat
+    </span>
+    <span className="text-[10px] sm:text-xs text-slate-500 font-bold leading-tight">
+      ul Atfal
+    </span>
+  </div>
 </div>
-
       {/* ── User dropdown ── */}
       <div className="relative" ref={dropdownRef}>
         <button

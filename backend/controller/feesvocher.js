@@ -1,7 +1,10 @@
 const PDFDocument = require("pdfkit");
 const archiver = require("archiver");
-const Student = require("../schema/StudentSchema"); 
 const path = require("path");
+const Student = require("../schema/StudentSchema");
+
+
+const LOGO_PATH = path.join(__dirname, "./assets/LOGO.png");
 
 const generateVoucherBuffer = (student) => {
   return new Promise((resolve, reject) => {
@@ -12,8 +15,7 @@ const generateVoucherBuffer = (student) => {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    const pageWidth = doc.page.width - 80; 
-
+    const pageWidth = doc.page.width - 80;
 
     doc
       .rect(20, 20, doc.page.width - 40, doc.page.height - 40)
@@ -21,35 +23,52 @@ const generateVoucherBuffer = (student) => {
       .strokeColor("#e2e8f0")
       .stroke();
 
+    let logoLoaded = false;
+    try {
+      const fs = require("fs");
+      if (fs.existsSync(LOGO_PATH)) {
+        doc.image(LOGO_PATH, 30, 22, {
+          fit: [50, 50],
+          align: "left",
+          valign: "center",
+        });
+        logoLoaded = true;
+      }
+    } catch (e) {
+      console.warn("Logo load nahi hua:", e.message);
+    }
+
+    const textStartX = logoLoaded ? 88 : 40;
+    const textWidth = logoLoaded ? pageWidth - 48 : pageWidth;
+    const nameAlign = logoLoaded ? "left" : "center";
+
     doc
-      .rect(20, 20, doc.page.width - 40, 80)
       .fillColor("#1e293b")
-      .fill();
-
-
-    doc
-      .fillColor("#f1f5f9")
-      .fontSize(16)
+      .fontSize(15)
       .font("Helvetica-Bold")
-      .text("Iqra Tarbiyat Ul Atfal", 40, 38, { width: pageWidth, align: "center" });
+      .text("Iqra Taleem o Tabiat ul Atfal", textStartX, 28, {
+        width: textWidth,
+        align: nameAlign,
+      });
 
     doc
-      .fillColor("#94a3b8")
+      .fillColor("#64748b")
       .fontSize(9)
       .font("Helvetica")
-      .text("Fee Payment Voucher", 40, 60, { width: pageWidth, align: "center" });
-
+      .text("Fee Voucher", textStartX, 50, {
+        width: textWidth,
+        align: nameAlign,
+      });
 
     doc
-      .moveTo(40, 115)
-      .lineTo(doc.page.width - 40, 115)
+      .moveTo(40, 80)
+      .lineTo(doc.page.width - 40, 80)
       .lineWidth(0.5)
       .dash(4, { space: 4 })
       .strokeColor("#cbd5e1")
       .stroke()
       .undash();
 
-  
     const today = new Date().toLocaleDateString("en-PK", {
       day: "2-digit", month: "short", year: "numeric",
     });
@@ -61,14 +80,13 @@ const generateVoucherBuffer = (student) => {
       .fillColor("#64748b")
       .fontSize(8)
       .font("Helvetica")
-      .text(`Voucher No: GR-${String(student.GrNumber).padStart(3, "0")}`, 40, 122)
-      .text(`Issue Date: ${today}`, 40, 134)
-      .text(`Due Date: ${dueDate}`, doc.page.width - 160, 122)
-      .text(`Academic Year: ${new Date().getFullYear()}`, doc.page.width - 160, 134);
+      .text(`Voucher No: GR-${String(student.GrNumber).padStart(3, "0")}`, 40, 88)
+      .text(`Issue Date: ${today}`, 40, 100)
+      .text(`Due Date: ${dueDate}`, doc.page.width - 160, 88)
+      .text(`Academic Year: ${new Date().getFullYear()}`, doc.page.width - 160, 100);
 
-    // ── Section: Student Info ─────────────────────────────────────────────────
     doc
-      .rect(40, 155, pageWidth, 22)
+      .rect(40, 118, pageWidth, 22)
       .fillColor("#f8fafc")
       .fill();
 
@@ -76,9 +94,8 @@ const generateVoucherBuffer = (student) => {
       .fillColor("#1e293b")
       .fontSize(9)
       .font("Helvetica-Bold")
-      .text("STUDENT INFORMATION", 48, 162);
+      .text("STUDENT INFORMATION", 48, 125);
 
-    // Info rows helper
     const infoRow = (label, value, y) => {
       doc
         .fillColor("#64748b")
@@ -92,24 +109,21 @@ const generateVoucherBuffer = (student) => {
         .text(value ?? "—", 180, y);
     };
 
-    infoRow("Student Name", student.StudentName, 188);
-    infoRow("Father Name", student.FatherName, 205);
-    infoRow("GR Number", `GR-${String(student.GrNumber).padStart(3, "0")}`, 222);
-    infoRow("Class", `Class ${student.Class}`, 239);
-    infoRow("Gender", student.Gender, 256);
- 
+    infoRow("Student Name", student.StudentName, 153);
+    infoRow("Father Name", student.FatherName, 170);
+    infoRow("GR Number", `GR-${String(student.GrNumber).padStart(3, "0")}`, 187);
+    infoRow("Class", `Class ${student.Class}`, 204);
+    infoRow("Gender", student.Gender, 221);
 
-    // ── Divider ───────────────────────────────────────────────────────────────
     doc
-      .moveTo(40, 295)
-      .lineTo(doc.page.width - 40, 295)
+      .moveTo(40, 240)
+      .lineTo(doc.page.width - 40, 240)
       .lineWidth(0.5)
       .strokeColor("#e2e8f0")
       .stroke();
 
-    // ── Section: Fee Details ──────────────────────────────────────────────────
     doc
-      .rect(40, 300, pageWidth, 22)
+      .rect(40, 245, pageWidth, 22)
       .fillColor("#f8fafc")
       .fill();
 
@@ -117,34 +131,22 @@ const generateVoucherBuffer = (student) => {
       .fillColor("#1e293b")
       .fontSize(9)
       .font("Helvetica-Bold")
-      .text("FEE DETAILS", 48, 307);
+      .text("FEE DETAILS", 48, 252);
 
-    // Fee row
     doc
       .fillColor("#64748b")
       .fontSize(9)
       .font("Helvetica")
-      .text("Monthly Fee", 48, 334)
-   
+      .text("Monthly Fee", 48, 279);
 
     doc
       .fillColor("#1e293b")
       .fontSize(9)
       .font("Helvetica-Bold")
-      .text(`Rs. ${Number(student.MonthlyFee).toLocaleString()}`, 180, 334);
+      .text(`Rs. ${Number(student.MonthlyFee).toLocaleString()}`, 180, 279);
 
-    // Fee status badge
-
-  
     doc
-   
-      .fontSize(8)
-      .font("Helvetica-Bold")
-  
-
-    // ── Total box ─────────────────────────────────────────────────────────────
-    doc
-      .rect(40, 378, pageWidth, 40)
+      .rect(40, 307, pageWidth, 40)
       .fillColor("#1e293b")
       .fill();
 
@@ -152,15 +154,18 @@ const generateVoucherBuffer = (student) => {
       .fillColor("#94a3b8")
       .fontSize(9)
       .font("Helvetica")
-      .text("TOTAL AMOUNT DUE", 48, 385);
+      .text("TOTAL AMOUNT DUE", 48, 314);
 
     doc
       .fillColor("#f1f5f9")
       .fontSize(16)
       .font("Helvetica-Bold")
-      .text(`Rs. ${Number(student.MonthlyFee).toLocaleString()}`, doc.page.width - 180, 382);
+      .text(
+        `Rs. ${Number(student.MonthlyFee).toLocaleString()}`,
+        doc.page.width - 180,
+        311
+      );
 
-    // ── Footer note ───────────────────────────────────────────────────────────
     doc
       .fillColor("#94a3b8")
       .fontSize(7.5)
@@ -168,7 +173,7 @@ const generateVoucherBuffer = (student) => {
       .text(
         "Please present this voucher at the school office. Valid for current month only.",
         40,
-        435,
+        365,
         { width: pageWidth, align: "center" }
       );
 
@@ -176,12 +181,12 @@ const generateVoucherBuffer = (student) => {
   });
 };
 
-// ─── Route 1: Single student voucher ─────────────────────────────────────────
-// GET /fee/voucher/:id
+
 const generateSingleVoucher = async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
-    if (!student) return res.status(404).json({ success: false, message: "Student not found" });
+    if (!student)
+      return res.status(404).json({ success: false, message: "Student not found" });
 
     const pdfBuffer = await generateVoucherBuffer(student);
 
@@ -204,7 +209,10 @@ const generateAllVouchers = async (req, res) => {
       return res.status(404).json({ success: false, message: "No students found" });
 
     res.setHeader("Content-Type", "application/zip");
-    res.setHeader("Content-Disposition", `attachment; filename="FeeVouchers_${new Date().getFullYear()}.zip"`);
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="FeeVouchers_${new Date().getFullYear()}.zip"`
+    );
 
     const archive = archiver("zip", { zlib: { level: 9 } });
 
@@ -215,12 +223,10 @@ const generateAllVouchers = async (req, res) => {
 
     archive.pipe(res);
 
-    // Har student ka PDF banao aur class folder mein rakho
     for (const student of students) {
       const pdfBuffer = await generateVoucherBuffer(student);
       const fileName = `GR${String(student.GrNumber).padStart(3, "0")}_${student.StudentName.replace(/\s+/g, "_")}.pdf`;
       const folderName = `Class_${student.Class}`;
-
       archive.append(pdfBuffer, { name: `${folderName}/${fileName}` });
     }
 

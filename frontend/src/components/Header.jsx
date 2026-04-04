@@ -50,7 +50,7 @@ const Header = () => {
     style={{ width: '72px', height: '72px' }}
     className="object-contain"
   />
-  <span className="text-sm font-semibold text-slate-700">Iqra Tarbiyat Ul Atfal</span>
+  <span className="text-sm font-semibold text-slate-700">Iqra Taleem o Tabiat ul Atfal</span>
 </div>
 
       {/* ── User dropdown ── */}

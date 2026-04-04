@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+
 const Admin = require('../schema/AdminSchema')
 const transporter = require('../nodemailer/nodemailer')
 
@@ -29,13 +29,8 @@ const Singup = async(req,res)=>{
 
    }
  )
-const mailOption= {
-    from : process.env.Sender_Email,
-    to: email,
-    subject:'Welcome to the Software',
-    text: `Your account has been create with id: ${email}`
-}
-await transporter.sendMail(mailOption)
+
+
 
  res.status(200).json({
     message:"registred Sucessful",

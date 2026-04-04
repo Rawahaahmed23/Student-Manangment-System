@@ -11,12 +11,12 @@ const transporter = nodemailer.createTransport({
 });
 
 
-transporter.verify((error, success) => {
-  if (error) {
-    console.log("❌ Mailer Error:", error.message);
-  } else {
-    console.log("✅ Mailer Ready");
-  }
-});
+// transporter.verify((error, success) => {
+//   if (error) {
+//     console.log("❌ Mailer Error:", error.message);
+//   } else {
+//     console.log("✅ Mailer Ready");
+//   }
+// });
 
 module.exports = transporter;

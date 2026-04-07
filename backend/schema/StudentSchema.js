@@ -45,18 +45,12 @@ const studentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-
-
-
- 
-
-
-  feeStatus: {
+ feeStatus: {
     type: String,
     enum: ["Paid", "Unpaid"],
     default: "Unpaid",
   },
- feeRecords: [
+  feeRecords: [
     {
       year: Number,
       paidMonths: [String],
@@ -65,10 +59,20 @@ const studentSchema = new mongoose.Schema({
   LastFeeUpdate: {
     type: Date,
   },
-nextDueDate:{
-type:Date
-},
+  nextDueDate: {
+    type: Date
+  },
+  PhoneNumber: {
+    type: String,
+    trim: true,
+    match: [/^[0-9+\-\s()]{7,15}$/, 'Invalid phone number'],
+  },
 
+  WhatsAppNumber: {
+    type: String,
+    trim: true,
+    match: [/^[0-9+\-\s()]{7,15}$/, 'Invalid WhatsApp number'],
+  },
 
 }, { timestamps: true });
 

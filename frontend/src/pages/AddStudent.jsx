@@ -27,6 +27,8 @@ const StudentRegistrationForm = () => {
     DateOfBirth: "",
     DateOfAdmission: "",
     MonthlyFee: "",
+    PhoneNumber: "",       // ── NEW
+    WhatsAppNumber: "",    // ── NEW
   });
 
   const [loading, setLoading] = useState(false);
@@ -44,6 +46,8 @@ const StudentRegistrationForm = () => {
       DateOfBirth: "",
       DateOfAdmission: "",
       MonthlyFee: "",
+      PhoneNumber: "",      // ── NEW
+      WhatsAppNumber: "",   // ── NEW
     });
   };
 
@@ -116,24 +120,24 @@ const StudentRegistrationForm = () => {
                     <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Father Name <span className="text-red-500">*</span></Label>
                     <Input placeholder="Enter Father Name" value={formData.FatherName} onChange={(e) => updateField("FatherName", e.target.value)} />
                   </div>
-                <div>
-  <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Class <span className="text-red-500">*</span></Label>
-  <select
-    value={formData.Class}
-    onChange={(e) => updateField("Class", e.target.value)}
-    className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="">Select Class</option>
-    <option value="Reception">Reception</option>
-    <option value="Junior">Junior</option>
-    <option value="Senior">Senior</option>
-    {[1,2,3,4,5,6,7,8].map(n => (
-      <option key={n} value={`Class ${n}`}>Class {n}</option>
-    ))}
-    <option value="Hifz">Hifz</option>
-    <option value="Nazra">Nazra</option>
-  </select>
-</div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Class <span className="text-red-500">*</span></Label>
+                    <select
+                      value={formData.Class}
+                      onChange={(e) => updateField("Class", e.target.value)}
+                      className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select Class</option>
+                      <option value="Reception">Reception</option>
+                      <option value="Junior">Junior</option>
+                      <option value="Senior">Senior</option>
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                        <option key={n} value={`Class ${n}`}>Class {n}</option>
+                      ))}
+                      <option value="Hifz">Hifz</option>
+                      <option value="Nazra">Nazra</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div>
@@ -167,6 +171,29 @@ const StudentRegistrationForm = () => {
                   <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Monthly Fee <span className="text-red-500">*</span></Label>
                   <Input type="number" placeholder="Enter Monthly Fee" value={formData.MonthlyFee} onChange={(e) => updateField("MonthlyFee", e.target.value)} />
                 </div>
+
+         
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Phone Number</Label>
+                    <Input
+                      type="tel"
+                      placeholder="e.g. 0300-1234567"
+                      value={formData.PhoneNumber}
+                      onChange={(e) => updateField("PhoneNumber", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-1.5 block">WhatsApp Number</Label>
+                    <Input
+                      type="tel"
+                      placeholder="e.g. 0300-1234567"
+                      value={formData.WhatsAppNumber}
+                      onChange={(e) => updateField("WhatsAppNumber", e.target.value)}
+                    />
+                  </div>
+                </div>
+
               </div>
             </CardContent>
           </Card>

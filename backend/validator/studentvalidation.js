@@ -1,5 +1,9 @@
 const yup = require("yup");
 
+// Reusable Pakistani phone number regex
+// Accepts: 0300-1234567 | 03001234567 | +923001234567 | 092-300-1234567
+const phoneRegex = /^(\+92|0092|0)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{7}$/;
+
 const studentValidationSchema = yup.object({
 
   GrNumber: yup
@@ -23,8 +27,6 @@ const studentValidationSchema = yup.object({
     .string()
     .typeError("Class must be a number")
     .required("Class is required"),
-  
-    
 
   Gender: yup
     .string()
@@ -49,6 +51,21 @@ const studentValidationSchema = yup.object({
     .typeError("Monthly Fee must be a number")
     .required("Monthly Fee is required")
     .positive(),
+
+
+  PhoneNumber: yup
+    .string()
+    .nullable()
+    .transform((value) => value === "" ? null : value)
+    .matches(phoneRegex, "Enter a valid Pakistani phone number (e.g. 0300-1234567)")
+    .optional(),
+
+  WhatsAppNumber: yup
+    .string()
+    .nullable()
+    .transform((value) => value === "" ? null : value)
+    .matches(phoneRegex, "Enter a valid Pakistani WhatsApp number (e.g. 0300-1234567)")
+    .optional(),
 });
 
 module.exports = studentValidationSchema;

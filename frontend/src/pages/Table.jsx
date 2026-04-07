@@ -140,6 +140,9 @@ function StudentTable({ students = [] }) {
                 <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">Admission</TableHead>
                 <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">Fee</TableHead>
                 <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">Fee Status</TableHead>
+                {/* ── NEW COLUMNS ── */}
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">Phone</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 text-center">WhatsApp</TableHead>
                 <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 pr-6 text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -225,6 +228,36 @@ function StudentTable({ students = [] }) {
                       </span>
                     </TableCell>
 
+                    {/* ── PHONE CELL ── */}
+                    <TableCell className="py-3.5 text-center">
+                      {student.PhoneNumber ? (
+                        <a
+                          href={`tel:${student.PhoneNumber}`}
+                          className="text-sm text-slate-600 hover:text-blue-500 transition-colors"
+                        >
+                          {student.PhoneNumber}
+                        </a>
+                      ) : (
+                        <span className="text-xs text-slate-300">—</span>
+                      )}
+                    </TableCell>
+
+                    {/* ── WHATSAPP CELL ── */}
+                    <TableCell className="py-3.5 text-center">
+                      {student.WhatsAppNumber ? (
+                        <a
+                          href={`https://wa.me/${student.WhatsAppNumber.replace(/\D/g, "")}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-green-600 hover:text-green-700 transition-colors"
+                        >
+                          {student.WhatsAppNumber}
+                        </a>
+                      ) : (
+                        <span className="text-xs text-slate-300">—</span>
+                      )}
+                    </TableCell>
+
                     <TableCell className="py-3.5 pr-6 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <button
@@ -245,7 +278,8 @@ function StudentTable({ students = [] }) {
                 ))
               ) : (
                 <TableRow className="h-[57px]">
-                  <TableCell colSpan={10} className="text-center text-slate-400 text-sm">
+                  {/* colSpan updated from 10 → 12 */}
+                  <TableCell colSpan={12} className="text-center text-slate-400 text-sm">
                     No students found.
                   </TableCell>
                 </TableRow>
@@ -254,7 +288,8 @@ function StudentTable({ students = [] }) {
               {/* Empty placeholder rows to keep fixed height */}
               {Array.from({ length: paginatedStudents.length === 0 ? emptyRowsCount - 1 : emptyRowsCount }).map((_, i) => (
                 <TableRow key={`empty-${i}`} className="h-[57px] border-b border-slate-50">
-                  {Array.from({ length: 10 }).map((_, j) => (
+                  {/* length updated from 10 → 12 */}
+                  {Array.from({ length: 12 }).map((_, j) => (
                     <TableCell key={j} />
                   ))}
                 </TableRow>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Edit2, Trash2, Calendar, BadgeCheck, Clock } from "lucide-react";
+import { Edit2, Trash2, Calendar, BadgeCheck, Clock, Phone, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useStudent } from "@/Store/StudentData";
 import DeleteConfirmPopup from "@/components/Popup";
@@ -121,6 +121,38 @@ function StudentCard({ student }) {
               <Calendar className="w-3 h-3 text-slate-400" />
               {new Date(student.DateOfAdmission).toLocaleDateString()}
             </span>
+          </InfoBlock>
+
+          {/* ── NEW: Phone ── */}
+          <InfoBlock label="Phone">
+            {student.PhoneNumber ? (
+              <a
+                href={`tel:${student.PhoneNumber}`}
+                className="flex items-center gap-1 text-blue-500 hover:text-blue-600 transition-colors"
+              >
+                <Phone className="w-3 h-3" />
+                {student.PhoneNumber}
+              </a>
+            ) : (
+              <span className="text-slate-300 text-xs">—</span>
+            )}
+          </InfoBlock>
+
+          {/* ── NEW: WhatsApp ── */}
+          <InfoBlock label="WhatsApp">
+            {student.WhatsAppNumber ? (
+              <a
+                href={`https://wa.me/${student.WhatsAppNumber.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 text-green-500 hover:text-green-600 transition-colors"
+              >
+                <MessageCircle className="w-3 h-3" />
+                {student.WhatsAppNumber}
+              </a>
+            ) : (
+              <span className="text-slate-300 text-xs">—</span>
+            )}
           </InfoBlock>
         </div>
 

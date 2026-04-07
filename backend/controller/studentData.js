@@ -13,7 +13,7 @@ const AddStudent = async (req, res) => {
     const {
       GrNumber, StudentName, FatherName,
       Class, Gender, DateOfBirth,
-      DateOfAdmission, MonthlyFee,
+      DateOfAdmission, MonthlyFee, PhoneNumber, WhatsAppNumber
     } = req.body;
 
     // Duplicate check
@@ -36,6 +36,8 @@ const AddStudent = async (req, res) => {
       DateOfBirth: moment(DateOfBirth, 'YYYY-MM-DD').toDate(),
       DateOfAdmission: moment(DateOfAdmission, 'YYYY-MM-DD').toDate(),
       MonthlyFee,
+       PhoneNumber, 
+       WhatsAppNumber
   
     });
 
@@ -87,7 +89,7 @@ const EditStudent = async (req, res) => {
     const {
       GrNumber, StudentName, FatherName, Class, Gender,
       DateOfBirth, DateOfAdmission, MonthlyFee, FeeStatus,
-      LastFeeUpdate, profileImage 
+      LastFeeUpdate, profileImage , PhoneNumber, WhatsAppNumber
     } = req.body;
 
     if (GrNumber && GrNumber !== student.GrNumber) {
@@ -114,6 +116,8 @@ const EditStudent = async (req, res) => {
       ...(MonthlyFee !== undefined && { MonthlyFee }),
       ...(FeeStatus && { FeeStatus }),
       ...(LastFeeUpdate && { LastFeeUpdate }),
+      ...(PhoneNumber !== undefined && { PhoneNumber }),
+...(WhatsAppNumber !== undefined && { WhatsAppNumber }),
 
     };
 

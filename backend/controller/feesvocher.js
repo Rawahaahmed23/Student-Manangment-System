@@ -3,6 +3,10 @@ const archiver = require("archiver");
 const path = require("path");
 const Student = require("../schema/StudentSchema");
 
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
 const LOGO_PATH = path.join(__dirname, "./assets/LOGO.png");
 
@@ -237,4 +241,34 @@ const generateAllVouchers = async (req, res) => {
   }
 };
 
-module.exports = { generateSingleVoucher, generateAllVouchers };
+const generateVouchersByMonthYear = async (req, res) => {
+  try {
+    const { id } = req.params; // ← student ID route se
+    const month = parseInt(req.body.month || req.query.month);
+    const year  = parseInt(req.body.year  || req.query.year);
+
+    if (!month || !year || month < 1 || month > 12 || year < 2000 || year > 2100) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid month (1-12) aur year (e.g. 2025) dena zaroori hai",
+      });
+    }
+
+    const student = await Student.findById(id); // ← sirf ek student
+    if (!student)
+      return res.status(404).json({ success: false, message: "Student not found" });
+
+    const monthName = MONTHS[month - 1];
+    const pdfBuffer = await generateVoucherBuffer(student, month, year);
+    const fileName = `Voucher_GR${String(student.GrNumber).padStart(3, "0")}_${student.StudentName.replace(/\s+/g, "_")}_${monthName}_${year}.pdf`;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    res.send(pdfBuffer);
+
+  } catch (err) {
+    console.error("Month/Year voucher error:", err);
+    res.status(500).json({ success: false, message: "Voucher generate karne mein error" });
+  }
+};
+module.exports = { generateSingleVoucher, generateAllVouchers,generateVouchersByMonthYear };

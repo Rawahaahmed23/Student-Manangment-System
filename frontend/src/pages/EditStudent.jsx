@@ -32,6 +32,8 @@ const EditStudent = () => {
     DateOfBirth: "",
     DateOfAdmission: "",
     MonthlyFee: "",
+    PhoneNumber: "",
+    WhatsAppNumber: "",
     FeeStatus: "",
     LastFeeUpdate: "",
   });
@@ -52,6 +54,8 @@ const EditStudent = () => {
           DateOfBirth: student.DateOfBirth?.slice(0, 10) || "",
           DateOfAdmission: student.DateOfAdmission?.slice(0, 10) || "",
           MonthlyFee: student.MonthlyFee || "",
+          PhoneNumber: student.PhoneNumber || "",
+          WhatsAppNumber: student.WhatsAppNumber || "",
           FeeStatus: student.FeeStatus || "",
           LastFeeUpdate: student.LastFeeUpdate || "",
         });
@@ -72,7 +76,7 @@ const EditStudent = () => {
 
     try {
       const response = await fetch(
-        `https://student-manangment-system.onrender.com/Student/edit/${id}`,
+        `http://localhost:5000/Student/edit/${id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -84,13 +88,13 @@ const EditStudent = () => {
 
       if (response.ok) {
         toast.success("Student Updated Successfully");
-         setTimeout(() => window.location.reload(), 100);
+        setTimeout(() => window.location.reload(), 100);
         setTimeout(() => navigate("/addstudent"), 1500);
       } else {
         throw new Error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message|| error.extraDetails);
     } finally {
       setLoading(false);
     }
@@ -212,7 +216,7 @@ const EditStudent = () => {
               </div>
             </div>
 
-            {/* Row 4 — Fee */}
+            {/* Row 4 — Fee + Phone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs text-slate-500">Monthly Fee</Label>
@@ -224,7 +228,32 @@ const EditStudent = () => {
                   className="rounded-xl border-slate-200 text-sm"
                 />
               </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-500">Phone Number</Label>
+                <Input
+                  type="tel"
+                  placeholder="e.g. 03001234567"
+                  value={formData.PhoneNumber}
+                  onChange={(e) => updateField("PhoneNumber", e.target.value)}
+                  className="rounded-xl border-slate-200 text-sm"
+                />
+              </div>
             </div>
+
+            {/* Row 5 — WhatsApp */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-500">WhatsApp Number</Label>
+                <Input
+                  type="tel"
+                  placeholder="e.g. 03001234567"
+                  value={formData.WhatsAppNumber}
+                  onChange={(e) => updateField("WhatsAppNumber", e.target.value)}
+                  className="rounded-xl border-slate-200 text-sm"
+                />
+              </div>
+            </div>
+
           </div>
 
           {/* ── Submit ── */}

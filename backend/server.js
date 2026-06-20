@@ -11,8 +11,8 @@ const feesHandler = require('./routes/feeroutes')
 const feesVoucher = require('./routes/feesvoucherRoutes')
 app.use(cors({
   origin: [
-    "http://localhost:5173",
-    "https://student-manangment-system.vercel.app",
+    "http://localhost:5173/",
+    "https://school-manamgent-system-for-pr.onrender.com",
     "https://student-manangment-system-git-main-rawaha.vercel.app"
   ],
   credentials: true

@@ -15,7 +15,7 @@ app.use(cors({
   origin: [
     "http://localhost:5173/",
     " https://student-manangment-system-9jwt.onrender.com",
-    "https://student-manangment-system-flame.vercel.app/"
+    "https://student-manangment-system-flame.vercel.app"
   ],
   credentials: true
 }));

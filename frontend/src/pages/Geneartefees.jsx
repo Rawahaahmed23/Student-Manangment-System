@@ -4,7 +4,7 @@ import { SearchFilter } from "../components/SearchFilter";
 import { useStudent } from "@/Store/StudentData";
 import MonthYearPickerPopup from "../components/voucherpopup";
 
-const BASE_URL = "http://localhost:5000"
+const BASE_URL = " https://student-manangment-system-9jwt.onrender.com"
 const ITEMS_PER_PAGE = 8;
 
 const downloadSingleVoucher = async (studentId, studentName) => {

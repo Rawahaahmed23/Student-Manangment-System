@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch("https://student-manangment-system.onrender.com/Logout", {
+      await fetch("https://student-manangment-system-9jwt.onrender.com/Logout", {
         method: "POST",
         credentials: "include",
       });
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
   const userAuthentication = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://student-manangment-system.onrender.com/auth", {
+      const response = await fetch("https://student-manangment-system-9jwt.onrender.com/auth", {
         method: "GET",
         credentials: "include",
       });

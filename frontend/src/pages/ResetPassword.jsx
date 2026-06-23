@@ -115,7 +115,7 @@ export default function VerifyOTP() {
     setLoading(true);
 
     try {
-      const response = await fetch('https://student-manangment-system.onrender.com/resetPassword', {
+      const response = await fetch(' https://student-manangment-system-9jwt.onrender.com/resetPassword', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp: verifiedOtp.current, newpassword: newPassword }),

@@ -10,7 +10,7 @@ export const StudentProvider = ({ children }) => {
 
 const deleteFeeRecord = async (id, year) => {
   try {
-    const res = await fetch(`https://student-manangment-system.onrender.com/fee/delete/${id}/record`, {
+    const res = await fetch(`https://student-manangment-system-9jwt.onrender.com/fee/delete/${id}/record`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -24,7 +24,7 @@ const deleteFeeRecord = async (id, year) => {
       return { success: false, message: data.message };
     }
 
-    await getStudents(); // refresh data
+    await getStudents(); 
     return { success: true };
 
   } catch (err) {
@@ -37,7 +37,7 @@ const deleteFeeRecord = async (id, year) => {
   const getStudents = async () => {
     setLoading(true);
     try {
-      const res = await fetch("https://student-manangment-system.onrender.com/Student/getStudent", {
+      const res = await fetch("https://student-manangment-system-9jwt.onrender.com/Student/getStudent", {
         method: "GET",
          credentials: "include"
       });
@@ -56,7 +56,7 @@ useEffect(() => {
 
 const markPaid = async (id, months, year) => {
   try {
-    const res = await fetch(`https://student-manangment-system.onrender.com/fee/markpaid/${id}`, {
+    const res = await fetch(`https://student-manangment-system-9jwt.onrender.com/fee/markpaid/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
@@ -80,7 +80,7 @@ const markPaid = async (id, months, year) => {
 
 const markUnpaid = async (id, months, year) => {
   try {
-    const res = await fetch(`https://student-manangment-system.onrender.com/fee/markunpaid/${id}`, {
+    const res = await fetch(`https://student-manangment-system-9jwt.onrender.com/fee/markunpaid/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" }, 
       body: JSON.stringify({ 
@@ -107,7 +107,7 @@ const markUnpaid = async (id, months, year) => {
   const editStudent = async (id, updatedData) => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/Student/updateStudent/${id}`, {
+      const res = await fetch(`https://student-manangment-system-9jwt.onrender.com/Student/updateStudent/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +129,7 @@ const markUnpaid = async (id, months, year) => {
   const deleteStudent = async (id) => {
     setLoading(true);
     try {
-      const res = await fetch(`https://student-manangment-system.onrender.com/Student/delete/${id}`, {
+      const res = await fetch(`https://student-manangment-system-9jwt.onrender.com/Student/delete/${id}`, {
         method: "DELETE",
       });
       const result = await res.json();

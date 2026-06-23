@@ -19,7 +19,7 @@ export default function ForgotPassword() {
     const email = emailRef.current.value;
 
     try {
-      const response = await fetch('https://student-manangment-system.onrender.com/sendOtp', {
+      const response = await fetch(' https://student-manangment-system-9jwt.onrender.com/sendOtp', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

@@ -1,3 +1,5 @@
+const dns = require('node:dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 require('dotenv').config()
 const connectDb = require('./utils/db')
 const express = require('express')
@@ -12,7 +14,7 @@ const feesVoucher = require('./routes/feesvoucherRoutes')
 app.use(cors({
   origin: [
     "http://localhost:5173/",
-    "https://school-manamgent-system-for-pr.onrender.com",
+    "https://student-manangment-system.vercel.app",
     "https://student-manangment-system-git-main-rawaha.vercel.app"
   ],
   credentials: true

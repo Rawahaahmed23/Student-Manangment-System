@@ -1,6 +1,8 @@
-const dns = require('node:dns');
-dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 require('dotenv').config()
+const dns = require("dns");
+
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 const connectDb = require('./utils/db')
 const express = require('express')
 const cors = require('cors')
@@ -13,8 +15,8 @@ const feesHandler = require('./routes/feeroutes')
 const feesVoucher = require('./routes/feesvoucherRoutes')
 app.use(cors({
   origin: [
-    "http://localhost:5173/",
-    " https://student-manangment-system-9jwt.onrender.com",
+    "http://localhost:5173",
+    "https://student-manangment-system-9jwt.onrender.com",
     "https://student-manangment-system-flame.vercel.app"
   ],
   credentials: true
